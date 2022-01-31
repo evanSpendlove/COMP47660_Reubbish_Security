@@ -1,0 +1,21 @@
+version: "3"
+services:
+  covid-vaccinations:
+    build: ./
+    ports:
+      - "8080:8080"
+    networks:
+      - covid-vaccinations-mysql
+    depends_on:
+      - mysqldb
+
+  mysqldb:
+    image: mysql:8
+    networks:
+      - covid-vaccinations-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=coviddb
+
+networks:
+  covid-vaccinations-mysql:

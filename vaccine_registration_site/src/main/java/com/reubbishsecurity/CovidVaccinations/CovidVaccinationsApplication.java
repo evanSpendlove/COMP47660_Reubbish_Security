@@ -1,13 +1,13 @@
-package Reubbish_Security.vaccine_registration_site;
+package com.reubbishsecurity.CovidVaccinations;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class VaccineRegistrationSiteApplication {
+public class CovidVaccinationsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(VaccineRegistrationSiteApplication.class, args);
+		SpringApplication.run(CovidVaccinationsApplication.class, args);
 	}
 
 }
