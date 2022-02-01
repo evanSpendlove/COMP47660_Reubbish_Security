@@ -7,13 +7,15 @@
 - Forum Page [Whoever finishes their part first]
 
 ## Task Breakdown
-- Users can register to the Vaccination System [Evan]
-    - Register page
-    - User database
-- Registered users can login/logout [Evan]
-    - Login page
-    - Logout button
-    - Configure Spring Security
+- Users can register to the Vaccination System [Evan] [DONE]
+    - Register page [DONE]
+    - User database [DONE]
+- Registered users can login/logout [Evan] [TODO]
+    - Login page [DONE]
+    - Logout button [DONE]
+    - Configure Spring Security [DONE]
+    - Break page into template fragments using th:fragment [TODO]
+    - Make home page [TODO]
 - Registered users can book a vaccination appointment [Reuben]
     - Book Your Vaccination page
     - Vaccination Database
