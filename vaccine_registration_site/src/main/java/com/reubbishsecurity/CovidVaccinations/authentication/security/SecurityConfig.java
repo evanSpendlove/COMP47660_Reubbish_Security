@@ -15,22 +15,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-    // TODO: Add custom login page
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                    .antMatchers("/resources/**", "/", "/style.css", "/login.css").permitAll()
-                    .antMatchers("/register").permitAll()
+                    .antMatchers("/resources/**", "/register", "/style.css", "/login.css", "/register.css").permitAll()
+                    .antMatchers("/")
+                        .hasAnyAuthority("ADMIN", "USER", "VACCINATOR", "STAFF")
                     .antMatchers("/admin")
-                        .hasAuthority("ADMIN")
-                        .anyRequest().authenticated()
+                            .hasAuthority("ADMIN")
+                            .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                    // .loginPage("/login")
-                    // .loginProcessingUrl("/loginSecure")
+                    .loginPage("/login")
+                    .loginProcessingUrl("/processLogin")
                     .defaultSuccessUrl("/", true)
-                    .usernameParameter("username").passwordParameter("password")
+                    .usernameParameter("pps").passwordParameter("password")
                     .permitAll()
                 .and()
                     .csrf().disable()
