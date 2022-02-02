@@ -42,7 +42,6 @@ public class FrontendController {
         return "register.html";
     }
 
-    // TODO: Add some validation on the date picker.
     @PostMapping("/register")
     public String register_user(@RequestParam final String name,
                                       @RequestParam final String surname,
@@ -56,13 +55,28 @@ public class FrontendController {
                                       @RequestParam final String password_repeat) {
         try {
             SimpleDateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-DD");
-            User new_user = new User(name, surname, dateFormatter.parse(dob), pps.toUpperCase(), address, phone_number, email, nationality.toLowerCase(), bCryptPasswordEncoder.encode(password));
+            User new_user = new User(name, surname, dateFormatter.parse(dob), pps.toUpperCase(), address, phone_number, email, nationality.toLowerCase(), bCryptPasswordEncoder.encode(password), User.LastActivity.UNVACCINATED);
             new_user.setRoles(userRole());
             userRepository.save(new_user);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return "login.html";
+    }
+
+    @PostMapping("/add/vaccination")
+    public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given) {
+        User user = userRepository.findByPps(pps).get();
+        if(user.getLast_activity() == User.LastActivity.FIRST_DOSE_APPT) {
+            user.setLast_activity(User.LastActivity.FIRST_DOSE_RECEIVED);
+            // TODO: Record vaccine given in appointment
+            // TODO: Book second appointment for 21 days later
+        } else if(user.getLast_activity() == User.LastActivity.SECOND_DOSE_APPT) {
+            user.setLast_activity(User.LastActivity.SECOND_DOSE_RECEIVED);
+            // TODO: Record vaccine given in appointment
+        }
+
+        return "index.html";
     }
 
     private Set<Role> userRole() {

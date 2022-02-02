@@ -15,6 +15,8 @@ import java.util.Set;
 })
 public class User {
 
+    public enum LastActivity { UNVACCINATED, FIRST_DOSE_APPT, FIRST_DOSE_RECEIVED, SECOND_DOSE_APPT, SECOND_DOSE_RECEIVED }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -27,7 +29,10 @@ public class User {
     private String email;
     private String nationality;
     private String password;
-    private String lastActivity;
+    private LastActivity last_activity;
+
+    // TODO: Add vaccination appointments using foreign key
+    // Format: [id, user_id, vaccination_centre, date, dose (1st/2nd), status, vaccine given
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles",
@@ -35,7 +40,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles;
 
-    public User(String name, String surname, Date dob, String pps, String address, String phone_number, String email, String nationality, String password) {
+    public User(String name, String surname, Date dob, String pps, String address, String phone_number, String email, String nationality, String password, LastActivity last_activity) {
         this.name = name;
         this.surname = surname;
         this.dob = dob;
@@ -45,6 +50,7 @@ public class User {
         this.email = email;
         this.nationality = nationality;
         this.password = password;
+        this.last_activity = last_activity;
     }
 
     public User(String name, String pps, String password) {}
@@ -139,11 +145,11 @@ public class User {
         this.roles = roles;
     }
 
-    public String getLastActivity() {
-        return lastActivity;
+    public LastActivity getLast_activity() {
+        return last_activity;
     }
 
-    public void setLastActivity(String lastActivity) {
-        this.lastActivity = lastActivity;
+    public void setLast_activity(LastActivity lastActivity) {
+        this.last_activity = lastActivity;
     }
 }

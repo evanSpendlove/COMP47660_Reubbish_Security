@@ -42,7 +42,7 @@
                     <input type="text" placeholder="Address" id="address" name="address" class="form-control form-box" required>
 
                     <label for="phone_number"><b>Phone Number</b></label>
-                    <input type="text" placeholder="Phone Number" id="phone_number" name="phone_number" class="form-control form-box" required pattern="^\+(353|44)(\s*\d){9,12}$">
+                    <input type="text" placeholder="Phone Number" id="phone_number" name="phone_number" class="form-control form-box" required pattern="^(\+353|\+44|0)(\s*\d){9,12}$">
 
                     <label for="email"><b>Email</b></label>
                     <input type="email" placeholder="Email" id="email" name="email" class="form-control form-box" required>
@@ -70,5 +70,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
 <!-- Bootstrap JS -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+<script>
+    // Used to calculate the date 18 years ago as only people over 18 years old can sign up
+    function today18YearsAgo() {
+        const today = new Date();
+        let day = today.getDate();
+        let month = today.getMonth()+1;
+        const year = today.getFullYear() - 18;
+
+        if (day < 10) {
+            day = '0' + day;
+        }
+
+        if (month < 10) {
+            month = '0' + month;
+        }
+        return year+'-'+month+'-'+day;
+    }
+
+    $(document).ready(function(){
+        $('#dob').attr('max', today18YearsAgo());
+    });
+</script>
 </body>
 </html>

@@ -16,13 +16,17 @@
     - Configure Spring Security [DONE]
     - Break page into template fragments using th:fragment [TODO]
     - Make home page [TODO]
+- Registered users should be able to retrieve a record of their last activity [Evan]
+    - For each user, we should store last activity in DB [DONE]
+    - Wire into backend [DONE]
+    - Make frontned user page and wire this into it [TODO]
 - Registered users can book a vaccination appointment [Reuben]
     - Book Your Vaccination page
     - Vaccination Database
     - Input validation
-- Registered users should be able to retrieve a record of their last activity [Evan]
-    - For each user, we should store last activity in DB
-    - Wire into backend
+- HSE staff who are in charge of administering the vaccination can update vaccination info about a user [Reuben/Evan]
+    - Vaccine-Admin page
+    - Backend wiring to allow updates to patients
 - Any user should be able to visualise aggregated statistics [John]
     - Stats DB
     - Stats page
@@ -33,7 +37,3 @@
 - HSE Staff can answer questions that users ask in the forum
     - User restrictions for answering questions based on role
     - Frontend update to include comments
-- HSE staff who are in charge of administering the vaccination can update vaccination info about a user [Reuben/Evan]
-    - Vaccine-Admin page
-    - Backend wiring to allow updates to patients
-
