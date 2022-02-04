@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,10 +16,9 @@
 </head>
 
 <body>
-<div class="topnav">
-    <a href="/index">Home</a>
-    <a class="active" href="/login">Login</a>
-</div>
+
+<div th:insert="header.html :: header"> </div>
+
 <div class="wrapper">
     <div id="content">
         <div class="login-area">
@@ -31,11 +31,17 @@
                     <label for="password"><b>Password</b></label>
                     <input type="password" placeholder="Enter Password" id="password" name="password" class="form-control form-box" required>
 
+                    <div th:if="${param.error}">
+                        <div class="alert alert-danger">
+                            <span>PPS Number or password is incorrect. Please provide valid PPS number or password.</span>
+                        </div>
+                    </div>
+
                     <button class="btn btn-primary btn-block" type="submit">Login</button>
                     <br>
                     <br>
                     <p>Don't have an account yet?</p>
-                    <a href="/register"><button class="btn btn-primary btn-block" id="btn-register" type="button">Register Account</button></a>
+                    <a style="text-decoration: none" href="/register"><button class="btn btn-primary btn-block" id="btn-register" type="button">Register Account</button></a>
                 </div>
             </form>
         </div>

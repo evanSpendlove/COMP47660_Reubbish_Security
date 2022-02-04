@@ -2,6 +2,7 @@ package com.reubbishsecurity.CovidVaccinations.frontend.controllers;
 
 import com.reubbishsecurity.CovidVaccinations.authentication.entity.Role;
 import com.reubbishsecurity.CovidVaccinations.authentication.entity.User;
+import com.reubbishsecurity.CovidVaccinations.authentication.exception.UserNotFoundException;
 import com.reubbishsecurity.CovidVaccinations.authentication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,7 +29,7 @@ public class FrontendController {
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String login(){
         return "login.html";
     }
 
@@ -65,8 +66,8 @@ public class FrontendController {
     }
 
     @PostMapping("/add/vaccination")
-    public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given) {
-        User user = userRepository.findByPps(pps).get();
+    public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given) throws UserNotFoundException {
+        User user = userRepository.findByPps(pps).orElseThrow(() -> new UserNotFoundException(pps));
         if(user.getLast_activity() == User.LastActivity.FIRST_DOSE_APPT) {
             user.setLast_activity(User.LastActivity.FIRST_DOSE_RECEIVED);
             // TODO: Record vaccine given in appointment

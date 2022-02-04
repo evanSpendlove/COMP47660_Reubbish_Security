@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,54 +8,53 @@
     <title>Register</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-    <link rel="stylesheet" href="./style.css">
-    <link rel="stylesheet" href="./register.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/login.css">
 
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
 </head>
 
 <body>
-<div class="topnav">
-    <a href="/Home">Home</a>
-    <a class="active" href="/login">Login</a>
-</div>
+
+<div th:insert="header.html :: header"> </div>
+
 <div class="wrapper">
     <div id="content">
-        <div class="login-area">
+        <div id="register-area" class="login-area">
             <form class="form-signin" th:action="@{/register}" method="post">
                 <h2 class="form-heading">Register to get a COVID-19 vaccine</h2>
                 <div class="form-group">
 
                     <label for="name"><b>Name</b></label>
-                    <input type="text" placeholder="First name" id="name" name="name" class="form-control form-box" required autofocus="true">
+                    <input type="text" placeholder="First name" id="name" name="name" class="form-control register-form-box" required autofocus="true">
 
                     <label for="surname"><b>Surname</b></label>
-                    <input type="text" placeholder="Surname" id="surname" name="surname" class="form-control form-box" required>
+                    <input type="text" placeholder="Surname" id="surname" name="surname" class="form-control register-form-box" required>
 
                     <label for="dob"><b>Date of Birth</b></label>
-                    <input type="date" placeholder="Date of Birth" id="dob" name="dob" class="form-control form-box" required>
+                    <input type="date" placeholder="Date of Birth" id="dob" name="dob" class="form-control register-form-box" required>
 
                     <label for="pps"><b>PPS Number</b></label>
-                    <input type="text" placeholder="PPS Number" id="pps" name="pps" class="form-control form-box" required pattern="[0-9]{7}[a-zA-z]{1,2}">
+                    <input type="text" placeholder="PPS Number" id="pps" name="pps" class="form-control register-form-box" required pattern="[0-9]{7}[a-zA-z]{1,2}">
 
                     <label for="address"><b>Address</b></label>
-                    <input type="text" placeholder="Address" id="address" name="address" class="form-control form-box" required>
+                    <input type="text" placeholder="Address" id="address" name="address" class="form-control register-form-box" required>
 
                     <label for="phone_number"><b>Phone Number</b></label>
-                    <input type="text" placeholder="Phone Number" id="phone_number" name="phone_number" class="form-control form-box" required pattern="^(\+353|\+44|0)(\s*\d){9,12}$">
+                    <input type="text" placeholder="Phone Number" id="phone_number" name="phone_number" class="form-control register-form-box" required pattern="^(\+353|\+44|0)(\s*\d){9,12}$">
 
                     <label for="email"><b>Email</b></label>
-                    <input type="email" placeholder="Email" id="email" name="email" class="form-control form-box" required>
+                    <input type="email" placeholder="Email" id="email" name="email" class="form-control register-form-box" required>
 
                     <label for="nationality"><b>Nationality</b></label>
-                    <input type="text" placeholder="Nationality" id="nationality" name="nationality" class="form-control form-box" required>
+                    <input type="text" placeholder="Nationality" id="nationality" name="nationality" class="form-control register-form-box" required>
 
                     <label for="password"><b>Password</b></label>
-                    <input type="password" placeholder="Enter Password" id="password" name="password" class="form-control form-box" required pattern=".{8,50}">
+                    <input type="password" placeholder="Enter Password" id="password" name="password" class="form-control register-form-box" required pattern=".{8,50}">
 
                     <label for="password_repeat"><b>Repeat Password</b></label>
-                    <input type="password" placeholder="Repeat Password" id="password_repeat" name="password_repeat" class="form-control form-box" required pattern=".{8,50}">
+                    <input type="password" placeholder="Repeat Password" id="password_repeat" name="password_repeat" class="form-control register-form-box" required pattern=".{8,50}">
 
                     <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p>
                     <button class="btn btn-primary btn-block" type="submit">Sign Up</button>

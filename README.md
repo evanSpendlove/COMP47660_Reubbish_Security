@@ -14,8 +14,7 @@
     - Login page [DONE]
     - Logout button [DONE]
     - Configure Spring Security [DONE]
-    - Break page into template fragments using th:fragment [TODO]
-    - Make home page [TODO]
+    - Break page into template fragments using th:fragment [DONE]
 - Registered users should be able to retrieve a record of their last activity [Evan]
     - For each user, we should store last activity in DB [DONE]
     - Wire into backend [DONE]
@@ -28,6 +27,7 @@
     - Vaccine-Admin page
     - Backend wiring to allow updates to patients
 - Any user should be able to visualise aggregated statistics [John]
+    - Question: Does "any user" include anonymous, non-logged-in users?
     - Stats DB
     - Stats page
     - Backend calculation functions

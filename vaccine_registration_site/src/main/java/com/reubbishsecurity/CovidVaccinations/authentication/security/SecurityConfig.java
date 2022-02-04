@@ -19,7 +19,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                    .antMatchers("/resources/**", "/register", "/style.css", "/login.css", "/register.css").permitAll()
+                    .antMatchers("/resources/**", "/images/**", "/css/**", "/register", "/statistics").permitAll()
                     .antMatchers("/")
                         .hasAnyAuthority("ADMIN", "USER", "VACCINATOR", "STAFF")
                     .antMatchers("/admin")
@@ -30,6 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .loginPage("/login")
                     .loginProcessingUrl("/processLogin")
                     .defaultSuccessUrl("/", true)
+                    .failureUrl("/login?error=true")
                     .usernameParameter("pps").passwordParameter("password")
                     .permitAll()
                 .and()

@@ -10,6 +10,18 @@
     margin: 10px auto;
 }
 
+#register-area {
+    width: 60%;
+    margin: 20px auto;
+    text-align: left;
+}
+
+.register-form-box{
+    background-color: #fafafa;
+    width: 100%;
+    margin: 10px auto;
+}
+
 .form-heading-smaller {
     font-size: 2rem;
     letter-spacing: -2px;
@@ -34,7 +46,7 @@ input[type=text]:focus, input[type=password]:focus {
     margin-top: 10px;
     width: 30%;
     height: 50%;
-    background: #5f3dc4;
+    background: #b4083a;
     border: none;
     float: none;
     margin: auto;
@@ -42,20 +54,12 @@ input[type=text]:focus, input[type=password]:focus {
 }
 
 #btn-register {
+    text-decoration: none;
     width: 40%;
 }
 
 .login-area .btn:hover {
-    background: #4728a3;
-}
-
-.login-area a {
-    text-decoration: none;
-    color: #a5a5a5;
-}
-
-.login-area a:hover {
-    color: #7e7e7e;
+    background: #7d082a;
 }
 
 .login-area h4 {
@@ -65,8 +69,4 @@ input[type=text]:focus, input[type=password]:focus {
 
 .login-area label {
     position: relative;
-}
-
-.has-error {
-    color: #FF3535;
 }

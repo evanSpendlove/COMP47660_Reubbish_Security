@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+
+<!--
+    Pages we need:
+        - Login
+            - Register
+        - Vaccine portal: view vaccine appointments or button to book one
+            - For users, book vaccine
+            - For vaccinators, update vaccination status for a person
+        - Statistics
+        - Forum
+            - For users, the page they see allows them to ask questions and see open questions & answer
+            - For Staff, the page they see allows them to respond to questions
+-->
+
+<div th:fragment="header">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/header.css">
+    <ul class="nav">
+        <li><a th:href="@{/portal}">Vaccine Portal</a></li>
+        <li>
+            <div sec:authorize="isAnonymous()">
+                <a th:href="@{/login}">Login</a>
+            </div>
+            <div sec:authorize="isAuthenticated()">
+                <a th:href="@{/logout}">Logout</a>
+            </div>
+        </li>
+        <li><a th:href="@{portal}"><img src="./images/HSE_white_logo.svg"></a></li>
+        <li><a th:href="@{/statistics}">Vaccination Statistics</a></li>
+        <li><a th:href="@{/forum}">Forum</a></li>
+    </ul>
+</div>
+
+</body>
+</html>
