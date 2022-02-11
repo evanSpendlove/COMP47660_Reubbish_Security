@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title th:text="${thread.title}"></title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/forum.css">
+
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+</head>
+
+<body>
+<div th:insert="header.html :: header"> </div>
+
+<div class="container">
+    <h2 th:text="${thread.getShortDate() + ' - ' + thread.title}"></h2>
+    <ul th:if="${posts.size()} > 0" class="list-group">
+        <li th:if="${posts.size() > 0}" th:each="post : ${posts}" th:text="${post.getFullDate() + ' - ' + post.user.name + ': ' + post.content}" class="list-group-item"></li>
+    </ul>
+</div>
+
+<div sec:authorize="hasAuthority('STAFF')" class="wrapper">
+    <div id="content">
+        <div class="login-area">
+            <form class="form-signin" th:action="@{'/forum/thread/' + ${thread.id} + '/post'}" method="post">
+                <h2 class="form-heading-smaller">Add a new Post</h2>
+                <div class="form-group">
+                    <input type="text" placeholder="Content" id="thread-content" name="content" class="form-control form-box" required>
+                    <button class="btn btn-primary btn-block" type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:insert="scripts.html :: scripts"> </div>
+
+</body>
+</html>

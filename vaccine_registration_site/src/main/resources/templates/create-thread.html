@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Login</title>
+    <title>Create a Thread</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/style.css">
@@ -16,32 +16,21 @@
 </head>
 
 <body>
-
 <div th:insert="header.html :: header"> </div>
 
 <div class="wrapper">
     <div id="content">
         <div class="login-area">
-            <form class="form-signin" th:action="@{/processLogin}" method="post">
-                <h2 class="form-heading-smaller">Sign in to your COVID-19 vaccination account</h2>
+            <form class="form-signin" th:action="@{/forum/create/thread}" method="post">
+                <h2 class="form-heading-smaller">Create a new Thread</h2>
                 <div class="form-group">
-                    <label for="pps"><b>PPS Number</b></label>
-                    <input type="text" placeholder="Enter PPS Number" id="pps" name="pps" class="form-control form-box" required>
+                    <label for="title"><b>Title</b></label>
+                    <input type="text" placeholder="Title" id="title" name="title" class="form-control form-box" required>
 
-                    <label for="password"><b>Password</b></label>
-                    <input type="password" placeholder="Enter Password" id="password" name="password" class="form-control form-box" required>
+                    <label for="thread-content"><b>Content</b></label>
+                    <input type="text" placeholder="Content" id="thread-content" name="content" class="form-control form-box" required>
 
-                    <div th:if="${param.error}">
-                        <div class="alert alert-danger">
-                            <span>PPS Number or password is incorrect. Please provide valid PPS number or password.</span>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-primary btn-block" type="submit">Login</button>
-                    <br>
-                    <br>
-                    <p>Don't have an account yet?</p>
-                    <a style="text-decoration: none" href="/register"><button class="btn btn-primary btn-block" id="btn-register" type="button">Register Account</button></a>
+                    <button class="btn btn-primary btn-block" type="submit">Create Thread</button>
                 </div>
             </form>
         </div>
