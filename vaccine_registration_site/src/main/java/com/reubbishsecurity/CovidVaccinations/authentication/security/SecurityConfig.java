@@ -36,9 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .usernameParameter("pps").passwordParameter("password")
                     .permitAll()
                 .and()
-                    .csrf().disable() // TODO: Add checks for CSRF and XSS attacks
-                    .logout()
-                    .permitAll();
+                .logout()
+                .permitAll();
     }
 
     @Bean
