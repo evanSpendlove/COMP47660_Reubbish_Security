@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Forum</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/forum.css">
+
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+</head>
+
+<body>
+<div th:insert="header.html :: header"> </div>
+
+<div class="container">
+    <h2>Forum Threads</h2>
+    <h3>Ask questions and have HSE Staff respond with answers</h3>
+    <div class="table-responsive">
+        <table style="background-color: #ffffff" class="table table-hover">
+            <colgroup>
+                <col style="width: 15%;">
+                <col style="width: 60%;">
+                <col style="width: 15%;">
+                <col style="width: 10%;">
+            </colgroup>
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Last Post</th>
+                <th>Replies</th>
+            </tr>
+            </thead>
+            <tr th:if="${threads.size()} > 0" th:each="thread : ${threads}" style="cursor:pointer;" th:attr="onclick=|window.location='/forum/thread/${thread.id}'|">
+                <td th:text="${thread.getShortDate()}"></td>
+                <td th:text="${thread.title}"></td>
+                <td th:text="${thread.getFormattedLatestPost()}"></td>
+                <td th:text="${thread.replies}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <br>
+    <br>
+
+    <a style="text-decoration: none" href="/forum/create/thread"><button class="btn btn-primary btn-block" id="btn-register" type="button">Create new Thread</button></a>
+</div>
+
+<div th:insert="scripts.html :: scripts"> </div>
+
+</body>
+</html>

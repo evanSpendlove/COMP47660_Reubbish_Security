@@ -23,8 +23,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/")
                         .hasAnyAuthority("ADMIN", "USER", "VACCINATOR", "STAFF")
                     .antMatchers("/admin")
-                            .hasAuthority("ADMIN")
-                            .anyRequest().authenticated()
+                        .hasAuthority("ADMIN")
+                    .antMatchers("/forum/thread/**/post")
+                        .hasAuthority("STAFF")
+                        .anyRequest().authenticated()
                 .and()
                 .formLogin()
                     .loginPage("/login")
@@ -34,9 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .usernameParameter("pps").passwordParameter("password")
                     .permitAll()
                 .and()
-                    .csrf().disable() // TODO: Add checks for CSRF and XSS attacks
-                    .logout()
-                    .permitAll();
+                .logout()
+                .permitAll();
     }
 
     @Bean
