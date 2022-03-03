@@ -1,5 +1,6 @@
 package com.reubbishsecurity.CovidVaccinations.authentication.entity;
 
+import com.reubbishsecurity.CovidVaccinations.authentication.entity.util.Nationality;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ import java.util.Set;
 public class User {
 
     public enum LastActivity { UNVACCINATED, FIRST_DOSE_APPT, FIRST_DOSE_RECEIVED, SECOND_DOSE_APPT, SECOND_DOSE_RECEIVED }
+    public enum Gender {MALE, FEMALE, NONBINARY, OTHER, NOT_DISCLOSED}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +32,7 @@ public class User {
     private String nationality;
     private String password;
     private LastActivity last_activity;
+    private Gender gender;
 
     // TODO: Add vaccination appointments using foreign key
     // Format: [id, user_id, vaccination_centre, date, dose (1st/2nd), status, vaccine given
@@ -40,7 +43,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles;
 
-    public User(String name, String surname, Date dob, String pps, String address, String phone_number, String email, String nationality, String password, LastActivity last_activity) {
+    public User(String name, String surname, Date dob, String pps, String address, String phone_number, String email, String nationality, String password, LastActivity last_activity, Gender gender) {
         this.name = name;
         this.surname = surname;
         this.dob = dob;
@@ -51,6 +54,7 @@ public class User {
         this.nationality = nationality;
         this.password = password;
         this.last_activity = last_activity;
+        this.gender = gender;
     }
 
     public User(String name, String pps, String password) {}
