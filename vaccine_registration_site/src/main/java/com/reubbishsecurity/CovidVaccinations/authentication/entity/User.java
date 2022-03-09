@@ -34,7 +34,7 @@ public class User {
     private String address;
     private String phone_number;
     private String email;
-    private String nationality;
+    private Nationality nationality;
     private String password;
     private LastActivity last_activity;
     private Gender gender;
@@ -51,7 +51,7 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Post> posts;
 
-    public User(String name, String surname, Date dob, String pps, String address, String phone_number, String email, String nationality, String password, LastActivity last_activity, Gender gender) {
+    public User(String name, String surname, Date dob, String pps, String address, String phone_number, String email, String nationality, String password, LastActivity last_activity, String gender) {
         this.name = name;
         this.surname = surname;
         this.dob = dob;
@@ -59,10 +59,23 @@ public class User {
         this.address = address;
         this.phone_number = phone_number;
         this.email = email;
-        this.nationality = nationality;
+        try {
+            this.nationality = Nationality.valueOf(nationality.toUpperCase());
+        }
+        catch (IllegalArgumentException e){
+            this.nationality = Nationality.UNKNOWN;
+        }
+
         this.password = password;
         this.last_activity = last_activity;
-        this.gender = gender;
+
+        try {
+            this.gender = Gender.valueOf(gender);
+        }
+        catch (IllegalArgumentException e){
+            this.gender = Gender.NOT_DISCLOSED;
+        }
+
     }
 
     public User(String name, String pps, String password) {}

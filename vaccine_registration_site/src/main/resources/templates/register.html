@@ -48,7 +48,15 @@
                     <input type="email" placeholder="Email" id="email" name="email" class="form-control register-form-box" required>
 
                     <label for="nationality"><b>Nationality</b></label>
-                    <input type="text" placeholder="Nationality" id="nationality" name="nationality" class="form-control register-form-box" required>
+                    <select id="nationality" name="nationality" class="form-control register-form-box">
+                        <option th:each="nat : ${nationalities}" th:text="${nat}" th:value="${nat}"></option>
+                    </select>
+
+                    <label for="gender"><b>Gender</b></label>
+                    <select id="gender" name="gender" class="form-control register-form-box">
+                        <option th:each="gen : ${genders}" th:text="${gen}" th:value="${gen}"></option>
+                    </select>
+
 
                     <label for="password"><b>Password</b></label>
                     <input type="password" placeholder="Enter Password" id="password" name="password" class="form-control register-form-box" required pattern=".{8,50}">
