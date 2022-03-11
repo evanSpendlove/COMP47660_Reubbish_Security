@@ -8,5 +8,11 @@
 <div th:insert="header.html :: header"> </div>
 <p>Hi, this is the index page</p>
 <p th:text="${flash}"></p>
+<div class="container">
+    <h2 th:text="${'Hello ' + name + '!'}"></h2>
+    <ul th:if="${appointments.size()} > 0" class="list-group">
+        <li th:if="${appointments.size() > 0}" th:each="appt : ${appointments}" th:text="${appt.getDate() + ' - ' + appt.getTime()}" class="list-group-item"></li>
+    </ul>
+</div>
 </body>
 </html>

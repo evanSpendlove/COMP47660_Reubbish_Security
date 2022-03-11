@@ -45,7 +45,17 @@ public class FrontendController {
     private static final String[] genders = Arrays.stream(User.Gender.values()).map(Enum::name).toArray(String[]::new);
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(Model model, Principal principal) {
+        User user = userRepository.findByPps(principal.getName()).get();
+        List<Appointment> appts = appointmentsRepository.findByUser(user);
+        model.addAttribute("name", user.getName());
+        model.addAttribute("appointments", appts);
+        model.addAttribute("lastActivity", formatLastActivity(user.getLastactivity()));
+
+        // TODO: Add cancel button for appointment
+        // TODO: Put the last activity for user
+
+        System.out.println(appointmentsRepository.findAll());
         return "index.html";
     }
 
@@ -56,7 +66,7 @@ public class FrontendController {
 
     @PostMapping("/processLogin")
     public String process_login() {
-        return "index.html";
+        return "redirect:/";
     }
 
     @GetMapping("/register")
@@ -87,7 +97,7 @@ public class FrontendController {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return "login.html";
+        return "redirect:/login";
     }
 
     @GetMapping("/update-roles")
@@ -110,7 +120,7 @@ public class FrontendController {
             userToUpdate.setRoles(userToUpdateRoles);
             userRepository.save(userToUpdate);
         }
-        return "index.html";
+        return "redirect:/";
     }
 
     @GetMapping("/portal/appointments")
@@ -131,7 +141,7 @@ public class FrontendController {
         } else if(user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT && vaccine_given == "Second Dose") {
             user.setLastactivity(User.LastActivity.SECOND_DOSE_RECEIVED);
         }
-        return "index.html";
+        return "redirect:/";
     }
 
     @MessageMapping("/appointment-registration")
@@ -166,7 +176,7 @@ public class FrontendController {
             appointmentsRepository.save(appointment);
         }
         model.addAttribute("flash","Appointment created");
-        return "index.html";
+        return "redirect:/";
     }
 
     private Set<Role> userRole() {
@@ -181,6 +191,24 @@ public class FrontendController {
             values.add(role.getName());
         }
         return values;
+    }
+
+    private String formatLastActivity(User.LastActivity activity) {
+        switch (activity) {
+            case UNVACCINATED:
+                return "Unvaccined - No Vaccination Appointments Booked";
+            case FIRST_DOSE_APPT:
+                return "Vaccination Appointment for First Dose Booked";
+            case FIRST_DOSE_RECEIVED:
+                return "First Dose administered - No Second Dose Appointment Booked";
+            case SECOND_DOSE_APPT:
+                return "First Dose administered - Second Dose Appointment Booked";
+            case SECOND_DOSE_RECEIVED:
+                return "Second Dose administered - Fully Vaccinated";
+            default:
+                return "Invalid Last Activity";
+
+        }
     }
 
     private void generateAppointments(String date){
