@@ -162,9 +162,11 @@ function updateCalendar(date){
 		}else{
 			li.appendChild(document.createTextNode(String(i+1)));
 		}
-		li.addEventListener("click", function(){
-			dayClick(this);
-		});
+		if (!((i+1 < today.getDate() && month == (today.getMonth() + 1)) || month < (today.getMonth() + 1))){
+			li.addEventListener("click", function(){
+				dayClick(this);
+			});
+		}
 		ul.appendChild(li);
 	}
 }
