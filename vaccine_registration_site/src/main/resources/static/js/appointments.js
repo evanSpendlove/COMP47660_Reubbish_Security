@@ -29,7 +29,7 @@ function disconnect() {
 }
 
 function dayClick(clickedDay) {
-	let month = currentCalendarMonth;
+	let month = String(currentCalendarMonth).padStart(2,'0');
 	let year = currentCalendarYear;
 	let day = "";
 	let clickedChildren = clickedDay.children;

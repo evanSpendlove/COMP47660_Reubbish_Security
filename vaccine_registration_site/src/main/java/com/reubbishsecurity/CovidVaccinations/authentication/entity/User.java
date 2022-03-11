@@ -120,6 +120,7 @@ public class User {
                 ", surname='" + surname + '\'' +
                 ", pps='" + pps + '\'' +
                 ", roles='" + roles + '\'' +
+                ", LastActivity='" + lastactivity + '\'' +
                 '}';
     }
 }

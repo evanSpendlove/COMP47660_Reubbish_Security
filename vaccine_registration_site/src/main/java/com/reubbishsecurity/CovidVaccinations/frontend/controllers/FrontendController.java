@@ -9,6 +9,7 @@ import com.reubbishsecurity.CovidVaccinations.frontend.messages.AppointmentAvail
 import com.reubbishsecurity.CovidVaccinations.frontend.messages.CheckAvailabilityOnDate;
 import com.reubbishsecurity.CovidVaccinations.frontend.repository.AppointmentsRepository;
 import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment;
+import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment.AppointmentType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,7 +30,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+<<<<<<< HEAD
 import java.util.stream.Collectors;
+=======
+import java.util.concurrent.TimeUnit;
+>>>>>>> Added checking appointment is atleast 3 weeks away and fixed updating vaccinations
 
 @Controller
 public class FrontendController {
@@ -132,6 +137,7 @@ public class FrontendController {
     @PostMapping("/add/vaccination")
     public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given) throws UserNotFoundException {
         User user = userRepository.findByPps(pps).orElseThrow(() -> new UserNotFoundException(pps));
+<<<<<<< HEAD
         List<Appointment> appointments = appointmentsRepository.findByUser(user).stream().filter(appointment -> appointment.getComplete() == false).collect(Collectors.toList());
         for(Appointment appt : appointments) {
             if (appt.getDoseDetails() == vaccine_given) {
@@ -140,9 +146,16 @@ public class FrontendController {
             }
         }
         if(user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT && vaccine_given == "First Dose") {
+=======
+        if(user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT && vaccine_given.equals("First Dose")) {
+            System.out.println("updated first dose received");
+>>>>>>> Added checking appointment is atleast 3 weeks away and fixed updating vaccinations
             user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
-        } else if(user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT && vaccine_given == "Second Dose") {
+            userRepository.save(user);
+        } else if(user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT && vaccine_given.equals("Second Dose")) {
+            System.out.println("updated second dose received");
             user.setLastactivity(User.LastActivity.SECOND_DOSE_RECEIVED);
+            userRepository.save(user);
         }
         return "redirect:/";
     }
@@ -163,16 +176,35 @@ public class FrontendController {
     public String add_vaccination(Principal principal, Model model, @RequestParam final String date, @RequestParam final String time){
         User user = userRepository.findByPps(principal.getName()).get();
         Appointment appointment = appointmentsRepository.findByDateAndTime(date, time);
+        System.out.println(user);
+        System.out.println("gets here 1");
         if (appointment.getAvailable() == true){
             appointment.setAvailable(false);
-            appointment.setUser(user);
+            System.out.println("gets here 2");
+            
             if(user.getLastactivity() == User.LastActivity.UNVACCINATED){
                 appointment.setAppointmentType(Appointment.AppointmentType.FIRST_DOSE);
+                appointment.setUser(user);
                 user.setLastactivity(User.LastActivity.FIRST_DOSE_APPT);
             }else if (user.getLastactivity() == User.LastActivity.FIRST_DOSE_RECEIVED){
-                appointment.setAppointmentType(Appointment.AppointmentType.SECOND_DOSE);
-                user.setLastactivity(User.LastActivity.SECOND_DOSE_APPT);
+                System.out.println(user);
+                Appointment previousAppointment = appointmentsRepository.findByUserAndAppointmentType(user, AppointmentType.FIRST_DOSE);
+                System.out.println(previousAppointment);
+                if (checkAppointmentsAreThreeWeeksApart(previousAppointment, appointment)){
+                    System.out.println("gets here 3");
+                    appointment.setUser(user);
+                    appointment.setAppointmentType(Appointment.AppointmentType.SECOND_DOSE);
+                    System.out.println("gets here 4");
+                    user.setLastactivity(User.LastActivity.SECOND_DOSE_APPT);
+                } else{
+                    System.out.println("gets here 5");
+                    appointment.setAvailable(true);
+                    model.addAttribute("flash","Appointment must be atleast 3 weeks from first");
+                    return "redirect:/";
+                }
+                
             } else{
+                appointment.setAvailable(true);
                 model.addAttribute("flash","Appointment not created due to error");
                 return "redirect:/";
             }
@@ -245,5 +277,33 @@ public class FrontendController {
             appointmentsRepository.save(c);
             appointmentsRepository.save(d);
         }
+    }
+
+    private Boolean checkAppointmentsAreThreeWeeksApart(Appointment prev, Appointment upcoming){
+        System.out.println("gets here 6");
+        String prevDate = prev.getDate();
+        String newDate = upcoming.getDate();
+        try {
+            System.out.println("gets here 7");
+            Date prevDate2 = new SimpleDateFormat("dd/MM/yyyy").parse(prevDate);
+            Date newDate2 = new SimpleDateFormat("dd/MM/yyyy").parse(newDate);
+            System.out.println("gets here 8");
+            long diffInMillies = Math.abs(newDate2.getTime() - prevDate2.getTime());
+            long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+            System.out.println("gets here 9");
+            System.out.println(diff);
+            System.out.println(prevDate2);
+            System.out.println(newDate2);
+            System.out.println(prevDate);
+            System.out.println(newDate);
+
+            return (diff >= 21);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+        
+
+        
     }
 }
