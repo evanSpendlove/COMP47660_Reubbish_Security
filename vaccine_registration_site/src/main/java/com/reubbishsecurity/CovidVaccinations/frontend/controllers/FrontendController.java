@@ -114,16 +114,21 @@ public class FrontendController {
     }
 
     @GetMapping("/portal/appointments")
-    public String portal(){
+    public String find_appointments(){
         return "appointments.html";
+    }
+
+    @GetMapping("/portal/update-appointments")
+    public String update_appointment(){
+        return "update-appointments.html";
     }
 
     @PostMapping("/add/vaccination")
     public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given) throws UserNotFoundException {
         User user = userRepository.findByPps(pps).orElseThrow(() -> new UserNotFoundException(pps));
-        if(user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT) {
+        if(user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT && vaccine_given == "First Dose") {
             user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
-        } else if(user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT) {
+        } else if(user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT && vaccine_given == "Second Dose") {
             user.setLastactivity(User.LastActivity.SECOND_DOSE_RECEIVED);
         }
         return "index.html";

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Update Appointments</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/login.css">
+
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+</head>
+
+<body>
+<div th:insert="header.html :: header"> </div>
+
+<div class="wrapper">
+    <div id="content">
+        <div class="login-area">
+            <form class="form-signin" th:action="@{/add/vaccination}" method="post">
+                <h2 class="form-heading-smaller">Update Appointments</h2>
+                <div class="form-group">
+                    <label for="pps"><b>PPS</b></label>
+                    <input type="text" placeholder="PPS" id="pps" name="pps" class="form-control form-box" required>
+
+                    <label for="vaccine_given"><b>Dose Given</b></label>
+                    <select id="vaccine_given" name="vaccine_given" class="form-control form-box" required>
+                        <option value="First Dose">First Dose</option>
+                        <option value="Second Dose">Second Dose</option>
+                    </select>
+                    <button class="btn btn-primary btn-block" type="submit">Update Appointment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:insert="scripts.html :: scripts"> </div>
+
+</body>
+</html>
