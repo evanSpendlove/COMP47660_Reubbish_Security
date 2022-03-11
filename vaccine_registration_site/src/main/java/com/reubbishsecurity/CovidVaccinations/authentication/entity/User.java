@@ -38,6 +38,9 @@ public class User {
             return text;
         }
     }
+
+    public enum VaccineType { MODERNA, PFIZOR };
+
     public enum Gender {
         MALE("Male"), FEMALE("Female"), NONBINARY("Non-Binary"), OTHER("Other"), NOT_DISCLOSED("Not Disclosed");
 
@@ -66,9 +69,8 @@ public class User {
     private String password;
     private LastActivity lastactivity;
     private Gender gender;
-
-    // TODO: Add vaccination appointments using foreign key
-    // Format: [id, user_id, vaccination_centre, date, dose (1st/2nd), status, vaccine given
+    private VaccineType first_dose;
+    private VaccineType second_dose;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles",

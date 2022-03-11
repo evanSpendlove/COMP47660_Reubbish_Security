@@ -51,8 +51,6 @@ public class FrontendController {
     public String index(Model model, Principal principal) {
         User user = userRepository.findByPps(principal.getName()).get();
         List<Appointment> appts = appointmentsRepository.findByUser(user).stream().filter(appointment -> appointment.getComplete() == false).collect(Collectors.toList());
-        System.out.println(appointmentsRepository.findByUser(user));
-        System.out.println(appts);
         model.addAttribute("name", user.getName());
         model.addAttribute("appointments", appts);
         model.addAttribute("lastActivity", formatLastActivity(user.getLastactivity()));
@@ -134,7 +132,7 @@ public class FrontendController {
     }
 
     @PostMapping("/add/vaccination")
-    public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given) throws UserNotFoundException {
+    public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given, @RequestParam String vaccine_type) throws UserNotFoundException {
         User user = userRepository.findByPps(pps).orElseThrow(() -> new UserNotFoundException(pps));
         List<Appointment> appointments = appointmentsRepository.findByUser(user).stream().filter(appointment -> appointment.getComplete() == false).collect(Collectors.toList());
         for(Appointment appt : appointments) {
@@ -143,12 +141,15 @@ public class FrontendController {
                 appointmentsRepository.save(appt);
             }
         }
+        User.VaccineType type = User.VaccineType.valueOf(vaccine_type);
         if(user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT && vaccine_given.equals("First Dose")) {
             System.out.println("updated first dose received");
+            user.setFirst_dose(type);
             user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
             userRepository.save(user);
         } else if(user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT && vaccine_given.equals("Second Dose")) {
             System.out.println("updated second dose received");
+            user.setSecond_dose(type);
             user.setLastactivity(User.LastActivity.SECOND_DOSE_RECEIVED);
             userRepository.save(user);
         }
@@ -219,10 +220,10 @@ public class FrontendController {
         appointment.setAvailable(true);
         appointment.setUser(null);
         if (user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT) {
-            user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
+            user.setLastactivity(User.LastActivity.UNVACCINATED);
         }
         if (user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT) {
-            user.setLastactivity(User.LastActivity.SECOND_DOSE_RECEIVED);
+            user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
         }
         appointmentsRepository.save(appointment);
         userRepository.save(user);
