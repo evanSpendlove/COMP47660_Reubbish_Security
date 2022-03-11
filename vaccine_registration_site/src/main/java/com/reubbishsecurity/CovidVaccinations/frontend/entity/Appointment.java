@@ -14,9 +14,13 @@ public class Appointment {
 
     public enum AppointmentType { NOTSET, FIRST_DOSE, SECOND_DOSE }
 
+    public enum VaccinationCenter { DUBLIN, CORK, LIMERICK, GALWAY }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    private VaccinationCenter vaccinationCenter;
 
     private String date;
 
