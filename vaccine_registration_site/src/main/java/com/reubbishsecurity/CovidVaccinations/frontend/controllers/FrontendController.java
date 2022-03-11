@@ -26,8 +26,8 @@ public class FrontendController {
 
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-    private final String[] nationalities = Arrays.stream(Nationality.values()).map(Enum::name).toArray(String[]::new);
-    private final String[] genders = Arrays.stream(User.Gender.values()).map(Enum::name).toArray(String[]::new);
+    private static final String[] nationalities = Arrays.stream(Nationality.values()).map(Enum::name).toArray(String[]::new);
+    private static final String[] genders = Arrays.stream(User.Gender.values()).map(Enum::name).toArray(String[]::new);
 
     @GetMapping("/")
     public String index() {
@@ -78,12 +78,12 @@ public class FrontendController {
     @PostMapping("/add/vaccination")
     public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given) throws UserNotFoundException {
         User user = userRepository.findByPps(pps).orElseThrow(() -> new UserNotFoundException(pps));
-        if(user.getLast_activity() == User.LastActivity.FIRST_DOSE_APPT) {
-            user.setLast_activity(User.LastActivity.FIRST_DOSE_RECEIVED);
+        if(user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT) {
+            user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
             // TODO: Record vaccine given in appointment
             // TODO: Book second appointment for 21 days later
-        } else if(user.getLast_activity() == User.LastActivity.SECOND_DOSE_APPT) {
-            user.setLast_activity(User.LastActivity.SECOND_DOSE_RECEIVED);
+        } else if(user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT) {
+            user.setLastactivity(User.LastActivity.SECOND_DOSE_RECEIVED);
             // TODO: Record vaccine given in appointment
         }
 
