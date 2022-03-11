@@ -16,7 +16,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" th:href="@{/portal/appointments}">Create Appointment</a>
-                <a class="dropdown-item" sec:authorize="hasAuthority('VACCINATOR')" th:href="@{/portal/update-appointments}">Update</a>
+                <a class="dropdown-item" sec:authorize="hasAuthority('VACCINATOR')" th:href="@{/portal/update-appointments}">Add Vaccine</a>
                 <a class="dropdown-item" sec:authorize="hasAuthority('ADMIN')" th:href="@{/update-roles/}">Update User Roles</a>
             </div>
         </li>
