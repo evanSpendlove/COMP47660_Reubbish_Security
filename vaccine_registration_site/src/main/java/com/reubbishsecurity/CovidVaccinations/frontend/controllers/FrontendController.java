@@ -5,35 +5,29 @@ import com.reubbishsecurity.CovidVaccinations.authentication.entity.User;
 import com.reubbishsecurity.CovidVaccinations.authentication.entity.util.Nationality;
 import com.reubbishsecurity.CovidVaccinations.authentication.exception.UserNotFoundException;
 import com.reubbishsecurity.CovidVaccinations.authentication.repository.UserRepository;
-import com.reubbishsecurity.CovidVaccinations.frontend.messages.AppointmentAvailability;
-import com.reubbishsecurity.CovidVaccinations.frontend.messages.CheckAvailabilityOnDate;
-import com.reubbishsecurity.CovidVaccinations.frontend.repository.AppointmentsRepository;
 import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment;
 import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment.AppointmentType;
 import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment.VaccinationCenter;
-
+import com.reubbishsecurity.CovidVaccinations.frontend.messages.AppointmentAvailability;
+import com.reubbishsecurity.CovidVaccinations.frontend.messages.CheckAvailabilityOnDate;
+import com.reubbishsecurity.CovidVaccinations.frontend.repository.AppointmentsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import java.security.Principal;
 
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Controller
 public class FrontendController {
@@ -146,30 +140,32 @@ public class FrontendController {
         User user = userRepository.findByPps(pps).orElseThrow(() -> new UserNotFoundException(pps));
         List<Appointment> appointments = appointmentsRepository.findByUser(user).stream().filter(appointment -> !appointment.getComplete()).collect(Collectors.toList());
         VaccinationCenter vaccinationCenter = null;
-        for(Appointment appt : appointments) {
-            if (appt.getDoseDetails().equals(vaccine_given)){
-                appt.setComplete(true);
-                appointmentsRepository.save(appt);
-                System.out.println("Previous Appointment: " + appt);
-                vaccinationCenter = appt.getVaccinationCenter();
+        boolean first_dose = user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT && vaccine_given.equals("First Dose");
+        boolean second_dose = user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT && vaccine_given.equals("Second Dose");
+        if(first_dose || second_dose) {
+            for(Appointment appt : appointments) {
+                if (appt.getDoseDetails().equals(vaccine_given)){
+                    appt.setComplete(true);
+                    appointmentsRepository.save(appt);
+                    vaccinationCenter = appt.getVaccinationCenter();
+                }
             }
         }
         User.VaccineType type = User.VaccineType.valueOf(vaccine_type);
-        if(user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT && vaccine_given.equals("First Dose")) {
-            System.out.println("updated first dose received");
+        if(first_dose) {
             user.setFirst_dose(type);
             user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
 
             boolean apptFound = false;
             int counter = 0;
 
-            Instant now = Instant.now(); //current date
+            Instant now = Instant.now(); // Current date
             Instant futureAppt = now.plus(Duration.ofDays(21));
             Date apptDate = Date.from(futureAppt);
             SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
             String dateStr = formatter.format(apptDate);
 
-            //Try fine an appointment 5 time
+            // Try to find an appointment 5 times
             while(!apptFound && counter < 5) {
                 if (vaccinationCenter == null){
                     vaccinationCenter = VaccinationCenter.DUBLIN;
@@ -186,23 +182,16 @@ public class FrontendController {
                     appointment.setUser(user);
                     user.setLastactivity(User.LastActivity.SECOND_DOSE_APPT);
                     appointmentsRepository.save(appointment);
-
                     apptFound = true;
-                    System.out.println("Appt Found: " + appointment);
-                    System.out.println("User: " + user);
-                    System.out.println("Date: " + dateStr);
-
                 }
                 else{
-                    System.out.println("No Appt Date: " + dateStr);
                     futureAppt = now.plus(Duration.ofDays(1));
                     apptDate = Date.from(futureAppt);
                     dateStr = formatter.format(apptDate);
                     counter++;
                 }
             }
-        } else if(user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT && vaccine_given.equals("Second Dose")) {
-            System.out.println("updated second dose received");
+        } else if(second_dose) {
             user.setSecond_dose(type);
             user.setLastactivity(User.LastActivity.SECOND_DOSE_RECEIVED);
         }
@@ -230,28 +219,20 @@ public class FrontendController {
         User user = userRepository.findByPps(principal.getName()).get();
         VaccinationCenter newVaccinationCenter = VaccinationCenter.valueOf(vaccinationCenter.toUpperCase());
         Appointment appointment = appointmentsRepository.findByDateAndTimeAndVaccinationCenter(date, time, newVaccinationCenter);
-        System.out.println(user);
-        System.out.println("gets here 1");
         if (appointment.getAvailable() == true){
             appointment.setAvailable(false);
-            System.out.println("gets here 2");
 
             if(user.getLastactivity() == User.LastActivity.UNVACCINATED){
                 appointment.setAppointmentType(Appointment.AppointmentType.FIRST_DOSE);
                 appointment.setUser(user);
                 user.setLastactivity(User.LastActivity.FIRST_DOSE_APPT);
             }else if (user.getLastactivity() == User.LastActivity.FIRST_DOSE_RECEIVED){
-                System.out.println(user);
                 Appointment previousAppointment = appointmentsRepository.findByUserAndAppointmentType(user, AppointmentType.FIRST_DOSE);
-                System.out.println(previousAppointment);
                 if (checkAppointmentsAreThreeWeeksApart(previousAppointment, appointment)){
-                    System.out.println("gets here 3");
                     appointment.setUser(user);
                     appointment.setAppointmentType(Appointment.AppointmentType.SECOND_DOSE);
-                    System.out.println("gets here 4");
                     user.setLastactivity(User.LastActivity.SECOND_DOSE_APPT);
                 } else{
-                    System.out.println("gets here 5");
                     appointment.setAvailable(true);
                     model.addAttribute("flash","Appointment must be atleast 3 weeks from first");
                     return "redirect:/";
@@ -334,23 +315,13 @@ public class FrontendController {
     }
 
     private Boolean checkAppointmentsAreThreeWeeksApart(Appointment prev, Appointment upcoming){
-        System.out.println("gets here 6");
         String prevDate = prev.getDate();
         String newDate = upcoming.getDate();
         try {
-            System.out.println("gets here 7");
             Date prevDate2 = new SimpleDateFormat("dd/MM/yyyy").parse(prevDate);
             Date newDate2 = new SimpleDateFormat("dd/MM/yyyy").parse(newDate);
-            System.out.println("gets here 8");
             long diffInMillies = Math.abs(newDate2.getTime() - prevDate2.getTime());
             long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-            System.out.println("gets here 9");
-            System.out.println(diff);
-            System.out.println(prevDate2);
-            System.out.println(newDate2);
-            System.out.println(prevDate);
-            System.out.println(newDate);
-
             return (diff >= 21);
         } catch (Exception ex) {
             ex.printStackTrace();
