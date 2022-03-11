@@ -6,11 +6,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-import java.sql.Time;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Set;
-
 @Setter
 @Getter
 @Entity
@@ -29,6 +24,8 @@ public class Appointment {
 
     private Boolean available;
 
+    private Boolean complete;
+
     private AppointmentType appointmentType; 
 
     @ManyToOne(fetch = FetchType.EAGER, optional = true)
@@ -41,6 +38,7 @@ public class Appointment {
         this.date = date;
         this.time = time;
         this.available = true;
+        this.complete = false;
         this.appointmentType = AppointmentType.NOTSET;
     }
 

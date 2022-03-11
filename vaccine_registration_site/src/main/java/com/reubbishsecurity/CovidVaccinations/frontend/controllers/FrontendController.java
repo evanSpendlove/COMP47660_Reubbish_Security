@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Controller
 public class FrontendController {
@@ -47,8 +48,7 @@ public class FrontendController {
     @GetMapping("/")
     public String index(Model model, Principal principal) {
         User user = userRepository.findByPps(principal.getName()).get();
-        List<Appointment> appts = appointmentsRepository.findByUser(user);
-        // TODO: Remove appointments that have already happened.
+        List<Appointment> appts = appointmentsRepository.findByUser(user).stream().filter(appointment -> appointment.getComplete() == false).collect(Collectors.toList());
         model.addAttribute("name", user.getName());
         model.addAttribute("appt", appts);
         model.addAttribute("lastActivity", formatLastActivity(user.getLastactivity()));
@@ -132,6 +132,13 @@ public class FrontendController {
     @PostMapping("/add/vaccination")
     public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given) throws UserNotFoundException {
         User user = userRepository.findByPps(pps).orElseThrow(() -> new UserNotFoundException(pps));
+        List<Appointment> appointments = appointmentsRepository.findByUser(user).stream().filter(appointment -> appointment.getComplete() == false).collect(Collectors.toList());
+        for(Appointment appt : appointments) {
+            if (appt.getDoseDetails() == vaccine_given) {
+                appt.setComplete(true);
+                appointmentsRepository.save(appt);
+            }
+        }
         if(user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT && vaccine_given == "First Dose") {
             user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
         } else if(user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT && vaccine_given == "Second Dose") {
