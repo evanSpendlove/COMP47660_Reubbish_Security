@@ -51,6 +51,14 @@ public class Appointment {
         return date.compareTo(u.getDate());
     }
 
+    public String getDoseDetails() {
+        if (appointmentType == AppointmentType.FIRST_DOSE) {
+            return "First Dose";
+        } else {
+            return "Second Dose";
+        }
+    }
+
     @Override
     public String toString() {
         return "Appointment{" +

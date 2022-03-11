@@ -3,16 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/login.css">
+
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
 </head>
 <body>
 <div th:insert="header.html :: header"> </div>
-<p>Hi, this is the index page</p>
+
 <p th:text="${flash}"></p>
+
 <div class="container">
-    <h2 th:text="${'Hello ' + name + '!'}"></h2>
-    <ul th:if="${appointments.size()} > 0" class="list-group">
-        <li th:if="${appointments.size() > 0}" th:each="appt : ${appointments}" th:text="${appt.getDate() + ' - ' + appt.getTime()}" class="list-group-item"></li>
-    </ul>
+    <h3 th:text="${'Hello ' + name + '!'}"></h3>
+    <h3 th:text="${'Current Vaccination Status: ' + lastActivity}"></h3>
+    <h3 th:if="${appointments.size() > 0}" th:each="appt : ${appointments}" th:text="${'You have an appointment confirmed for ' + appt.getDate() + ' at ' + appt.getTime() + ' for your ' + appt.getDoseDetails() + '.'}" class="list-group-item"></h3>
+    <form class="form" th:action="@{/cancel/appointment}" method="post">
+        <input type="text" style="display: none" disabled="true" id="id" name="id" th:if="${appointments.size() > 0}" th:each="appt : ${appointments}" th:value="${appt.getId()}">
+        <button class="btn btn-primary btn-block" type="submit" th:if="${appointments.size() > 0}" th:each="appt: ${appointments}">Cancel Appointment</button>
+    </form>
 </div>
 </body>
+
+<div th:insert="scripts.html :: scripts"> </div>
+
 </html>

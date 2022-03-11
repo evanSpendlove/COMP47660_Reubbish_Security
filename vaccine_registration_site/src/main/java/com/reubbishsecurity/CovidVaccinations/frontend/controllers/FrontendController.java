@@ -48,14 +48,10 @@ public class FrontendController {
     public String index(Model model, Principal principal) {
         User user = userRepository.findByPps(principal.getName()).get();
         List<Appointment> appts = appointmentsRepository.findByUser(user);
+        // TODO: Remove appointments that have already happened.
         model.addAttribute("name", user.getName());
-        model.addAttribute("appointments", appts);
+        model.addAttribute("appt", appts);
         model.addAttribute("lastActivity", formatLastActivity(user.getLastactivity()));
-
-        // TODO: Add cancel button for appointment
-        // TODO: Put the last activity for user
-
-        System.out.println(appointmentsRepository.findAll());
         return "index.html";
     }
 
@@ -171,11 +167,31 @@ public class FrontendController {
                 user.setLastactivity(User.LastActivity.SECOND_DOSE_APPT);
             } else{
                 model.addAttribute("flash","Appointment not created due to error");
-                return "index.html";
+                return "redirect:/";
             }
             appointmentsRepository.save(appointment);
         }
         model.addAttribute("flash","Appointment created");
+        return "redirect:/";
+    }
+
+    @PostMapping("/cancel/appointment")
+    public String cancel_appointment(Principal principal, @RequestParam final long id) {
+        User user = userRepository.findByPps(principal.getName()).get();
+        Appointment appointment = appointmentsRepository.findById(id).get();
+        if (appointment.getUser() != user) {
+            return "redirect:/";
+        }
+        appointment.setAvailable(true);
+        appointment.setUser(null);
+        if (user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT) {
+            user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
+        }
+        if (user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT) {
+            user.setLastactivity(User.LastActivity.SECOND_DOSE_RECEIVED);
+        }
+        appointmentsRepository.save(appointment);
+        userRepository.save(user);
         return "redirect:/";
     }
 
@@ -196,7 +212,7 @@ public class FrontendController {
     private String formatLastActivity(User.LastActivity activity) {
         switch (activity) {
             case UNVACCINATED:
-                return "Unvaccined - No Vaccination Appointments Booked";
+                return "Unvaccinated - No Vaccination Appointments Booked";
             case FIRST_DOSE_APPT:
                 return "Vaccination Appointment for First Dose Booked";
             case FIRST_DOSE_RECEIVED:
