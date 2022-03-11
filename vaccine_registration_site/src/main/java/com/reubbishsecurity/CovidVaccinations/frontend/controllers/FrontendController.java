@@ -54,6 +54,14 @@ public class FrontendController {
         List<Appointment> appts = appointmentsRepository.findByUser(user).stream().filter(appointment -> appointment.getComplete() == false).collect(Collectors.toList());
         model.addAttribute("name", user.getName());
         model.addAttribute("appointments", appts);
+        model.addAttribute("hasFirstDose", user.getFirst_dose() != null);
+        model.addAttribute("hasSecondDose", user.getSecond_dose() != null);
+        if(user.getFirst_dose() != null) {
+            model.addAttribute("first_dose", user.getFirst_dose().toString());
+        }
+        if(user.getSecond_dose() != null) {
+            model.addAttribute("second_dose", user.getSecond_dose().toString());
+        }
         model.addAttribute("lastActivity", formatLastActivity(user.getLastactivity()));
         return "index.html";
     }

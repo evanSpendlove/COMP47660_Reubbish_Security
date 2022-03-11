@@ -18,6 +18,8 @@
 <div class="container">
     <h3 th:text="${'Hello ' + name + '!'}"></h3>
     <h3 th:text="${'Current Vaccination Status: ' + lastActivity}"></h3>
+    <h3 th:if="${hasFirstDose == true}" th:text="${'First Dose: ' + first_dose}" ></h3>
+    <h3 th:if="${hasSecondDose == true}" th:text="${'Second Dose: ' + second_dose}" ></h3>
     <h3 th:if="${appointments.size() > 0}" th:each="appt : ${appointments}" th:text="${'You have an appointment confirmed for ' + appt.getDate() + ' at ' + appt.getTime() + ' for your ' + appt.getDoseDetails() + '.'}" class="list-group-item"></h3>
     <form class="form" th:action="@{/cancel/appointment}" method="post">
         <input type="hidden" name="id" th:if="${appointments.size() > 0}" th:each="appt : ${appointments}" th:value="${appt.getId()}">

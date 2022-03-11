@@ -100,7 +100,7 @@ public class User {
         }
 
         this.password = password;
-        this.lastactivity = lastactivity;
+        this.lastactivity = last_activity;
 
         try {
             this.gender = Gender.valueOf(gender);
