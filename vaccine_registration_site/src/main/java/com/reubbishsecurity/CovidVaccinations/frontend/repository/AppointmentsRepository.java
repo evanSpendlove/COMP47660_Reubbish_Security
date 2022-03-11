@@ -8,12 +8,13 @@ import java.util.List;
 
 import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment;
 import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment.AppointmentType;
+import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment.VaccinationCenter;
 
 @Repository
 public interface AppointmentsRepository extends JpaRepository<Appointment, Long>{
-    List<Appointment> findByDate(String date);
-    List<Appointment> findByDateAndAvailable(String date, Boolean available);
-    Appointment findByDateAndTime(String date, String time);
+    List<Appointment> findByDateAndVaccinationCenter(String date, VaccinationCenter vaccinationCenter);
+    List<Appointment> findByDateAndAvailableAndVaccinationCenter(String date, Boolean available, VaccinationCenter vaccinationCenter);
+    Appointment findByDateAndTimeAndVaccinationCenter(String date, String time, VaccinationCenter vaccinationCenter);
     List<Appointment> findByUser(User user);
     Appointment findByUserAndAppointmentType(User user, AppointmentType appointmentType);
 }

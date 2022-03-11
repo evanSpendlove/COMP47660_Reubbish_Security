@@ -5,6 +5,7 @@ let currentCalendarMonth = -1;
 let currentCalendarYear = -1;
 let currentSelectedDate = "";
 let currentAvailableTimesSelected = null;
+let currentSelectedCenter = null;
 
 function connect() {
     const socket = new SockJS('/appointment-registration');
@@ -17,6 +18,27 @@ function connect() {
         });
     });
 	initCalendar();
+}
+
+function selectVaccinationCenter(selection){
+	currentSelectedCenter = selection;
+	let selectionDiv = document.getElementById("vaccinationCenterDiv");
+	selectionDiv.style.display = "none";
+	let calendar = document.getElementById("calendar");
+	calendar.style.display = "inline";
+	let centerText = document.getElementById("vaccinationCenterText");
+	centerText.innerHTML = selection;
+	
+}
+
+function unselectVaccinationCenter(){
+	currentSelectedCenter = null;
+	let selectionDiv = document.getElementById("vaccinationCenterDiv");
+	selectionDiv.style.display = "inline";
+	let calendar = document.getElementById("calendar");
+	calendar.style.display = "none";
+	let centerText = document.getElementById("vaccinationCenterText");
+	centerText.innerHTML = "";
 }
 
 
@@ -82,6 +104,8 @@ function confirmationModal(clickedAppointment){
 	timeField.value = time;
 	var hidden1 = document.getElementById("hidden1");
 	hidden1.style.display = "none";
+	let vaccinationCenterForm = document.getElementById("vaccinationCenter");
+	vaccinationCenterForm.value = currentSelectedCenter;
 	confirmationArea.style.display="inline";
 }
 
@@ -92,7 +116,7 @@ function closeConfirmation(){
 }
 
 function checkAvailability(date) {
-    stompClient.send("/app/appointment-registration", {}, JSON.stringify({"date": date}));
+    stompClient.send("/app/appointment-registration", {}, JSON.stringify({"date": date, "vaccinationCenter": currentSelectedCenter}));
 }
 
 function initCalendar(){

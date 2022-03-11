@@ -19,12 +19,24 @@
 <body onload="connect()">
 <div th:insert="header.html :: header"> </div>
 
-<div class="container" id="calendar">
+<div class="wrapper" id="vaccinationCenterDiv">
+  <div class="container">
+      <div class="login-area">
+        <button class="btn btn-success mx-1 my-1" onclick="selectVaccinationCenter('Dublin')">Dublin</button>
+        <button class="btn btn-success mx-1 my-1" onclick="selectVaccinationCenter('Cork')">Cork</button>
+        <button class="btn btn-success mx-1 my-1" onclick="selectVaccinationCenter('Limerick')">Limerick</button>
+        <button class="btn btn-success mx-1 my-1" onclick="selectVaccinationCenter('Galway')">Galway</button>
+      </div>
+  </div>
+</div>
+
+<div class="container" id="calendar" style="display: none;">
   <div class="month">      
     <ul>
       <li class="prev" onclick="moveCalendarBack()">&#10094;</li>
       <li class="next" onclick="moveCalendarForward()">&#10095;</li>
       <li id="month">
+        <span id="vaccinationCenterText"></span>
         <span id="monthText"></span>
         <br>
         <span style="font-size:18px" id="yearText"></span>
@@ -43,11 +55,11 @@
   
   <ul class="days" id="days">
   </ul>
+  <button class="btn btn-danger mx-1 my-1" onclick="unselectVaccinationCenter()">Change Vaccination Center</button> 
 </div>
 <div class="wrapper" id="hidden1" style="display: none;">
   <div id="container">
       <div class="login-area" id="availableTimesDiv">
-          
       </div>
   </div>
 </div>
@@ -63,6 +75,8 @@
 
               <label for="thread-content"><b>Time</b></label>
               <input type="text" placeholder="Time" id="time" name="time" class="form-control form-box" readonly>
+              <label for="thread-content"><b>Vaccination Center</b></label>
+              <input type="text" placeholder="vaccinationCenter" id="vaccinationCenter" name="vaccinationCenter" class="form-control form-box" readonly>
               <button class="btn btn-danger" type="button" onclick="closeConfirmation()">Go back</button>
               <button class="btn btn-success" type="submit">Create Appointment</button>
           </div>

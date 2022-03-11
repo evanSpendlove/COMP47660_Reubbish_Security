@@ -5,12 +5,14 @@ import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment;
 public class AppointmentAvailability {
     private List<Appointment> availableTimes;
     private String Date;
+    private String vaccinationCenter;
 
     public AppointmentAvailability() {}
 
-    public AppointmentAvailability(List<Appointment> availableTimes, String Date){
+    public AppointmentAvailability(List<Appointment> availableTimes, String Date, String vaccinationCenter){
         this.availableTimes = availableTimes;
         this.Date = Date;
+        this.vaccinationCenter = vaccinationCenter;
     }
 
     public List<Appointment> getAvailableTimes(){
@@ -29,5 +31,11 @@ public class AppointmentAvailability {
         this.Date = newValue;
     }
 
-    
+    public String getVaccinationCenter(){
+        return this.vaccinationCenter;
+    }
+
+    public void setVaccinationCenter(String vaccinationCenter){
+        this.vaccinationCenter = vaccinationCenter;
+    }
 }

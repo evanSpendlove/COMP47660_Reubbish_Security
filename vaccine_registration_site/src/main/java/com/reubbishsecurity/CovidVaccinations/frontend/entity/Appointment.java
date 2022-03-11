@@ -38,12 +38,13 @@ public class Appointment {
 
     public Appointment() {}
 
-    public Appointment(String date, String time){
+    public Appointment(String date, String time, VaccinationCenter vaccinationCenter){
         this.date = date;
         this.time = time;
         this.available = true;
         this.complete = false;
         this.appointmentType = AppointmentType.NOTSET;
+        this.vaccinationCenter = vaccinationCenter;
     }
 
     public int compareTo(Appointment u) {

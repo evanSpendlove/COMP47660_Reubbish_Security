@@ -10,6 +10,7 @@ import com.reubbishsecurity.CovidVaccinations.frontend.messages.CheckAvailabilit
 import com.reubbishsecurity.CovidVaccinations.frontend.repository.AppointmentsRepository;
 import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment;
 import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment.AppointmentType;
+import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment.VaccinationCenter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -209,18 +210,21 @@ public class FrontendController {
     @SendTo("/topic/updates")
     public AppointmentAvailability send(final CheckAvailabilityOnDate message) throws Exception {
         String messageDate = message.getDate();
-        List<Appointment> appointments = appointmentsRepository.findByDate(messageDate);
+        String messageVaccinationCenter = message.getVaccinationCenter();
+        VaccinationCenter vaccinationCenter = VaccinationCenter.valueOf(messageVaccinationCenter.toUpperCase());
+        List<Appointment> appointments = appointmentsRepository.findByDateAndVaccinationCenter(messageDate, vaccinationCenter);
         if (appointments.size() == 0){
-            generateAppointments(messageDate);
+            generateAppointments(messageDate, vaccinationCenter);
         }
-        appointments = appointmentsRepository.findByDateAndAvailable(messageDate, true);
-        return new AppointmentAvailability(appointments, messageDate);
+        appointments = appointmentsRepository.findByDateAndAvailableAndVaccinationCenter(messageDate, true, vaccinationCenter);
+        return new AppointmentAvailability(appointments, messageDate, messageVaccinationCenter);
     }
 
     @PostMapping("/add/appointment")
-    public String add_vaccination(Principal principal, Model model, @RequestParam final String date, @RequestParam final String time){
+    public String add_vaccination(Principal principal, Model model, @RequestParam final String date, @RequestParam final String time, @RequestParam final String vaccinationCenter){
         User user = userRepository.findByPps(principal.getName()).get();
-        Appointment appointment = appointmentsRepository.findByDateAndTime(date, time);
+        VaccinationCenter newVaccinationCenter = VaccinationCenter.valueOf(vaccinationCenter.toUpperCase());
+        Appointment appointment = appointmentsRepository.findByDateAndTimeAndVaccinationCenter(date, time, newVaccinationCenter);
         System.out.println(user);
         System.out.println("gets here 1");
         if (appointment.getAvailable() == true){
@@ -311,12 +315,12 @@ public class FrontendController {
         }
     }
 
-    private void generateAppointments(String date){
+    private void generateAppointments(String date, VaccinationCenter vaccinationCenter){
         for(int i = 9; i < 17; i++){
-            Appointment a = new Appointment(date, String.valueOf(i)+":00");
-            Appointment b = new Appointment(date, String.valueOf(i)+":15");
-            Appointment c = new Appointment(date, String.valueOf(i)+":30");
-            Appointment d = new Appointment(date, String.valueOf(i)+":45");
+            Appointment a = new Appointment(date, String.valueOf(i)+":00", vaccinationCenter);
+            Appointment b = new Appointment(date, String.valueOf(i)+":15", vaccinationCenter);
+            Appointment c = new Appointment(date, String.valueOf(i)+":30", vaccinationCenter);
+            Appointment d = new Appointment(date, String.valueOf(i)+":45", vaccinationCenter);
             appointmentsRepository.save(a);
             appointmentsRepository.save(b);
             appointmentsRepository.save(c);
@@ -347,6 +351,5 @@ public class FrontendController {
             ex.printStackTrace();
             return false;
         }
-
     }
 }
