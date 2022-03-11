@@ -5,25 +5,20 @@
 </head>
 <body>
 
-<!--
-    Pages we need:
-        - Login [DONE]
-            - Register [DONE]
-        - Vaccine portal: view vaccine appointments or button to book one
-            - For users, book vaccine
-            - For vaccinators, update vaccination status for a person
-        - Statistics
-        - Forum [DONE]
-            - For users, the page they see allows them to ask questions and see open questions & answer
-            - For Staff, the page they see allows them to respond to questions
--->
-
 <div th:fragment="header">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <ul class="nav">
-        <li><a th:href="@{/portal}">Vaccine Portal</a></li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Vaccination Portal
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" th:href="@{/portal/a}">Button 1</a>
+                <a class="dropdown-item" th:href="@{/portal/b}">Button 2</a>
+            </div>
+        </li>
         <li>
             <div sec:authorize="isAnonymous()">
                 <a th:href="@{/login}">Login</a>
@@ -36,7 +31,15 @@
             </div>
         </li>
         <li><a th:href="@{/portal}"><img src="/images/HSE_white_logo.svg"></a></li>
-        <li><a th:href="@{/statistics}">Vaccination Statistics</a></li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Vaccination Statistics
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" th:href="@{/statistics/activity}">Demographic Breakdown</a>
+                <a class="dropdown-item" th:href="@{/statistics/peractivity}">Vaccination Status Breakdown</a>
+            </div>
+        </li>
         <li><a th:href="@{/forum}">Forum</a></li>
     </ul>
 </div>

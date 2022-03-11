@@ -44,6 +44,10 @@ ul.nav {
     text-decoration: none !important;
 }
 
+a.dropdown-item {
+    color: black;
+}
+
 ul.nav li:first-child a{
     border: none;
     border-right: 1px solid #fff;
