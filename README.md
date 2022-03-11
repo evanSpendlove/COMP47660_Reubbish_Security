@@ -1,5 +1,10 @@
 # COMP47660_Reubbish_Security
 
+## Team Members
+- Reuben Mulligan (18733589)
+- John O'Donnell (18368983)
+- Evan Spendlove (18492656)
+
 ## How to run
 Prerequisites are docker, docker-compose {3 or greater} and maven installed with your Java Home set.
 
