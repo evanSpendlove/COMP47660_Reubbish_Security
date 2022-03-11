@@ -21,9 +21,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import java.security.Principal;
-import org.springframework.ui.Model;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -134,11 +135,12 @@ public class FrontendController {
     @PostMapping("/add/vaccination")
     public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given, @RequestParam String vaccine_type) throws UserNotFoundException {
         User user = userRepository.findByPps(pps).orElseThrow(() -> new UserNotFoundException(pps));
-        List<Appointment> appointments = appointmentsRepository.findByUser(user).stream().filter(appointment -> appointment.getComplete() == false).collect(Collectors.toList());
+        List<Appointment> appointments = appointmentsRepository.findByUser(user).stream().filter(appointment -> !appointment.getComplete()).collect(Collectors.toList());
         for(Appointment appt : appointments) {
-            if (appt.getDoseDetails().equals(vaccine_given)) {
+            if (appt.getDoseDetails().equals(vaccine_given)){
                 appt.setComplete(true);
                 appointmentsRepository.save(appt);
+                System.out.println("Previous Appointment: " + appt);
             }
         }
         User.VaccineType type = User.VaccineType.valueOf(vaccine_type);
@@ -146,13 +148,52 @@ public class FrontendController {
             System.out.println("updated first dose received");
             user.setFirst_dose(type);
             user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
-            userRepository.save(user);
+
+            boolean apptFound = false;
+            int counter = 0;
+
+            Instant now = Instant.now(); //current date
+            Instant futureAppt = now.plus(Duration.ofDays(21));
+            Date apptDate = Date.from(futureAppt);
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+            String dateStr = formatter.format(apptDate);
+
+            //Try fine an appointment 5 time
+            while(!apptFound && counter < 5) {
+                List<Appointment> appointmentsFuture = appointmentsRepository.findByDate(dateStr);
+                if (appointmentsFuture.size() == 0) {
+                    generateAppointments(dateStr);
+                }
+                appointmentsFuture = appointmentsRepository.findByDateAndAvailable(dateStr, true);
+
+                if (appointmentsFuture.size() > 1){
+                    Appointment appointment = appointmentsFuture.get(0);
+                    appointment.setAppointmentType(Appointment.AppointmentType.SECOND_DOSE);
+                    appointment.setUser(user);
+                    user.setLastactivity(User.LastActivity.SECOND_DOSE_APPT);
+                    appointmentsRepository.save(appointment);
+
+                    apptFound = true;
+                    System.out.println("Appt Found: " + appointment);
+                    System.out.println("User: " + user);
+                    System.out.println("Date: " + dateStr);
+
+                }
+                else{
+                    System.out.println("No Appt Date: " + dateStr);
+                    futureAppt = now.plus(Duration.ofDays(1));
+                    apptDate = Date.from(futureAppt);
+                    dateStr = formatter.format(apptDate);
+                    counter++;
+                }
+            }
         } else if(user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT && vaccine_given.equals("Second Dose")) {
             System.out.println("updated second dose received");
             user.setSecond_dose(type);
             user.setLastactivity(User.LastActivity.SECOND_DOSE_RECEIVED);
-            userRepository.save(user);
         }
+
+        userRepository.save(user);
         return "redirect:/";
     }
 
@@ -177,7 +218,7 @@ public class FrontendController {
         if (appointment.getAvailable() == true){
             appointment.setAvailable(false);
             System.out.println("gets here 2");
-            
+
             if(user.getLastactivity() == User.LastActivity.UNVACCINATED){
                 appointment.setAppointmentType(Appointment.AppointmentType.FIRST_DOSE);
                 appointment.setUser(user);
@@ -198,7 +239,7 @@ public class FrontendController {
                     model.addAttribute("flash","Appointment must be atleast 3 weeks from first");
                     return "redirect:/";
                 }
-                
+
             } else{
                 appointment.setAvailable(true);
                 model.addAttribute("flash","Appointment not created due to error");
@@ -298,8 +339,6 @@ public class FrontendController {
             ex.printStackTrace();
             return false;
         }
-        
 
-        
     }
 }
