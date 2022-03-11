@@ -39,7 +39,7 @@ public class User {
         }
     }
 
-    public enum VaccineType { MODERNA, PFIZOR };
+    public enum VaccineType { MODERNA, PFIZER };
 
     public enum Gender {
         MALE("Male"), FEMALE("Female"), NONBINARY("Non-Binary"), OTHER("Other"), NOT_DISCLOSED("Not Disclosed");
