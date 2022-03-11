@@ -20,8 +20,8 @@
     <h3 th:text="${'Current Vaccination Status: ' + lastActivity}"></h3>
     <h3 th:if="${appointments.size() > 0}" th:each="appt : ${appointments}" th:text="${'You have an appointment confirmed for ' + appt.getDate() + ' at ' + appt.getTime() + ' for your ' + appt.getDoseDetails() + '.'}" class="list-group-item"></h3>
     <form class="form" th:action="@{/cancel/appointment}" method="post">
-        <input type="text" style="display: none" disabled="true" id="id" name="id" th:if="${appointments.size() > 0}" th:each="appt : ${appointments}" th:value="${appt.getId()}">
-        <button class="btn btn-primary btn-block" type="submit" th:if="${appointments.size() > 0}" th:each="appt: ${appointments}">Cancel Appointment</button>
+        <input type="hidden" name="id" th:if="${appointments.size() > 0}" th:each="appt : ${appointments}" th:value="${appt.getId()}">
+        <button class="btn btn-primary btn-block" type="submit" th:if="${appointments.size() > 0}" th:each="appt : ${appointments}" >Cancel Appointment</button>
     </form>
 </div>
 </body>

@@ -54,8 +54,10 @@ public class FrontendController {
     public String index(Model model, Principal principal) {
         User user = userRepository.findByPps(principal.getName()).get();
         List<Appointment> appts = appointmentsRepository.findByUser(user).stream().filter(appointment -> appointment.getComplete() == false).collect(Collectors.toList());
+        System.out.println(appointmentsRepository.findByUser(user));
+        System.out.println(appts);
         model.addAttribute("name", user.getName());
-        model.addAttribute("appt", appts);
+        model.addAttribute("appointments", appts);
         model.addAttribute("lastActivity", formatLastActivity(user.getLastactivity()));
         return "index.html";
     }
