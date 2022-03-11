@@ -30,11 +30,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
-<<<<<<< HEAD
 import java.util.stream.Collectors;
-=======
 import java.util.concurrent.TimeUnit;
->>>>>>> Added checking appointment is atleast 3 weeks away and fixed updating vaccinations
 
 @Controller
 public class FrontendController {
@@ -139,19 +136,15 @@ public class FrontendController {
     @PostMapping("/add/vaccination")
     public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given) throws UserNotFoundException {
         User user = userRepository.findByPps(pps).orElseThrow(() -> new UserNotFoundException(pps));
-<<<<<<< HEAD
         List<Appointment> appointments = appointmentsRepository.findByUser(user).stream().filter(appointment -> appointment.getComplete() == false).collect(Collectors.toList());
         for(Appointment appt : appointments) {
-            if (appt.getDoseDetails() == vaccine_given) {
+            if (appt.getDoseDetails().equals(vaccine_given)) {
                 appt.setComplete(true);
                 appointmentsRepository.save(appt);
             }
         }
-        if(user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT && vaccine_given == "First Dose") {
-=======
         if(user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT && vaccine_given.equals("First Dose")) {
             System.out.println("updated first dose received");
->>>>>>> Added checking appointment is atleast 3 weeks away and fixed updating vaccinations
             user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
             userRepository.save(user);
         } else if(user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT && vaccine_given.equals("Second Dose")) {
