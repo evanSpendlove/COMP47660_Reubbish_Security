@@ -1,44 +1,42 @@
 # COMP47660_Reubbish_Security
 
+## How to run
+Prerequisites are docker, docker-compose {3 or greater} and maven installed with your Java Home set.
+
+Java version must be 11
+
+Navigate to vaccine_registration_site folder and run 
+```
+chmod +x refresh.sh
+./refresh.sh
+```
+Note: if communication link error, SQL container is taking to long to start, run following commands:
+```
+docker-compose down
+docker-compose up -d mysqldb
+<Wait approximately 2-3 minutes>
+./refresh.sh
+```
+
+## User Roles
+There are 4 user roles: 
+ - Admin - Can change user roles using localhost:8080/update-roles
+ - Staff - Can respond to forum threads
+ - Vaccinator - Can update user vaccination status in vaccine portal
+ - User - Can create threads in forum and book themselves appointments via vaccine portal, can cancel appointments and reschedule once cancelled.
+
+## Test Login Credentials
+We have created some test users {username, password, roles}:
+ - 0, admin, ADMIN
+ - 1, staff, STAFF
+ - 2, vaccinator, VACCINATOR
+ - 3, user, USER
+
+We also created some other fake data for statistics page.
+
 ## Services
-- User Management [Evan] [DONE]
-- Forum Page [Evan] [DONE]
-- Vaccinations [Reuben]
-- Statistics [John]
+- User Management [Evan] 
+- Forum Page [Evan] 
+- Vaccination Portal [Reuben / Evan / John] 
+- Statistics [John] 
 
-## Task Breakdown
-- Registered users can book a vaccination appointment [Reuben]
-    - Book Your Vaccination page
-    - Vaccination Database
-    - Input validation
-
-- HSE staff who are in charge of administering the vaccination can update vaccination info about a user [Reuben]
-    - Vaccine-Admin page
-    - Backend wiring to allow updates to patients
-
-- Any user should be able to visualise aggregated statistics [John]
-    - Question: Does "any user" include anonymous, non-logged-in users?
-    - Stats DB
-    - Stats page
-    - Backend calculation functions
-
-## Complete
-- Any user should be able to ask questions in a public forum [Evan] [DONE]
-    - Forum page [DONE]
-    - New Thread page [DONE]
-    - Thread page [DONE]
-    - Forum post & comment DB [DONE]
-- HSE Staff can answer questions that users ask in the forum [Evan] [DONE]
-    - User restrictions for answering questions based on role [DONE]
-    - Frontend update to include comments [DONE]
-- Users can register to the Vaccination System [Evan] [DONE]
-    - Register page [DONE]
-    - User database [DONE]
-- Registered users can login/logout [Evan] [DONE]
-    - Login page [DONE]
-    - Logout button [DONE]
-    - Configure Spring Security [DONE]
-    - Break page into template fragments using th:fragment [DONE]
-- Registered users should be able to retrieve a record of their last activity [Evan] [DONE]
-    - For each user, we should store last activity in DB [DONE]
-    - Wire into backend [DONE]
