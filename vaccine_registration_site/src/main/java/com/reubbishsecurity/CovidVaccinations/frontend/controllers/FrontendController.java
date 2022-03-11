@@ -145,11 +145,13 @@ public class FrontendController {
     public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given, @RequestParam String vaccine_type) throws UserNotFoundException {
         User user = userRepository.findByPps(pps).orElseThrow(() -> new UserNotFoundException(pps));
         List<Appointment> appointments = appointmentsRepository.findByUser(user).stream().filter(appointment -> !appointment.getComplete()).collect(Collectors.toList());
+        VaccinationCenter vaccinationCenter = null;
         for(Appointment appt : appointments) {
             if (appt.getDoseDetails().equals(vaccine_given)){
                 appt.setComplete(true);
                 appointmentsRepository.save(appt);
                 System.out.println("Previous Appointment: " + appt);
+                vaccinationCenter = appt.getVaccinationCenter();
             }
         }
         User.VaccineType type = User.VaccineType.valueOf(vaccine_type);
@@ -169,11 +171,14 @@ public class FrontendController {
 
             //Try fine an appointment 5 time
             while(!apptFound && counter < 5) {
-                List<Appointment> appointmentsFuture = appointmentsRepository.findByDate(dateStr);
-                if (appointmentsFuture.size() == 0) {
-                    generateAppointments(dateStr);
+                if (vaccinationCenter == null){
+                    vaccinationCenter = VaccinationCenter.DUBLIN;
                 }
-                appointmentsFuture = appointmentsRepository.findByDateAndAvailable(dateStr, true);
+                List<Appointment> appointmentsFuture = appointmentsRepository.findByDateAndVaccinationCenter(dateStr, vaccinationCenter);
+                if (appointmentsFuture.size() == 0) {
+                    generateAppointments(dateStr, vaccinationCenter);
+                }
+                appointmentsFuture = appointmentsRepository.findByDateAndAvailableAndVaccinationCenter(dateStr, true, vaccinationCenter);
 
                 if (appointmentsFuture.size() > 1){
                     Appointment appointment = appointmentsFuture.get(0);
