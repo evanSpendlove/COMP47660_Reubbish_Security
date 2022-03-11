@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Vaccination Statistics</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/login.css">
+
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+</head>
+
+<body>
+
+<div th:insert="header.html :: header"> </div>
+
+<div class="wrapper">
+    <div id="content">
+        <b class="text-center" style="color:Black;">Vaccine Statistics by Activity:</b>
+        <div class="charts">
+            <figure class="highcharts-figure">
+                <div id="genderContainer"></div>
+            </figure>
+            <figure class="highcharts-figure">
+                <div id="natContainer"></div>
+            </figure>
+            <figure class="highcharts-figure">
+                <div id="ageContainer"></div>
+            </figure>
+        </div>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+
+            var gender = [[${gender}]];
+            var genderMap = [[${genderMap}]];
+
+            var formatteddatagender = [];
+            for (var key in genderMap) {
+                var singleObject = {
+                    name: key.toUpperCase(),
+                    y: genderMap[key]
+                }
+                formatteddatagender.push(singleObject);
+            }
+
+            var pieObjGender = {
+                name: 'Vaccination Activity Gender: ' + gender,
+                colorByPoint: true,
+                data: formatteddatagender
+            }
+
+            console.log(pieObjGender);
+
+            drawPieChart('genderContainer', 'Vaccination Activity Gender: ' + gender, [pieObjGender]);
+
+            var nationality = [[${nationality}]];
+            var natMap = [[${nationalityMap}]];
+
+            var formatteddatanat = [];
+            for (var key in natMap) {
+                var singleObject = {
+                    name: key.toUpperCase(),
+                    y: natMap[key]
+                }
+                formatteddatanat.push(singleObject);
+            }
+
+            var pieObjNat = {
+                name: 'Vaccination Activity Nationality: ' + nationality,
+                colorByPoint: true,
+                data: formatteddatanat
+            }
+
+            console.log(pieObjNat);
+
+            drawPieChart('natContainer', 'Vaccination Activity Nationality: ' + nationality, [pieObjNat]);
+
+
+            var ageRange = [[${ageRange}]];
+            var ageMap = [[${ageMap}]];
+
+            var formatteddataage = [];
+            for (var key in ageMap) {
+                var singleObject = {
+                    name: key.toUpperCase(),
+                    y: ageMap[key]
+                }
+                formatteddataage.push(singleObject);
+            }
+
+            var pieObjAge = {
+                name: 'Vaccination Activity Age Range: ' + ageRange,
+                colorByPoint: true,
+                data: formatteddataage
+            }
+
+            console.log(pieObjAge);
+
+            drawPieChart('ageContainer', 'Vaccination Activity Age Range: ' + ageRange, [pieObjAge]);
+
+
+
+            function drawPieChart(container, title, data) {
+
+                Highcharts.chart(container, {
+                        chart: {
+                            plotBackgroundColor: null,
+                            plotBorderWidth: null,
+                            plotShadow: false,
+                            type: 'pie'
+                        },
+                        title: {
+                            text: title
+                        },
+
+                        yAxis: {
+                            title: {
+                                text: 'Total People'
+                            }
+                        },
+
+                        legend: {
+                            layout: 'vertical',
+                            align: 'right',
+                            verticalAlign: 'middle'
+                        },
+
+                        plotOptions: {
+                            pie: {
+                                allowPointSelect: true,
+                                cursor: 'pointer',
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                                }
+                            }
+                        },
+
+                        series: data,
+
+                        responsive: {
+                            rules: [{
+                                condition: {
+                                    maxWidth: 500
+                                },
+                                chartOptions: {
+                                    legend: {
+                                        layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom'
+                                    }
+                                }
+                            }]
+                        }
+                    }
+                );
+            }
+            /*]]>*/
+        </script>
+
+        <form class="form-signin" th:action="@{/statistics/activity}" method="get">
+            <h2 class="form-heading">Change Chart Statistics</h2>
+            <div class="form-group">
+
+                <label for="nationality"><b>Nationality</b></label>
+                <select id="nationality" name="nationality" class="form-control register-form-box">
+                    <option th:each="nat : ${nationalities}" th:text="${nat}" th:value="${nat}"></option>
+                </select>
+
+                <label for="gender"><b>Gender</b></label>
+                <select id="gender" name="gender" class="form-control register-form-box">
+                    <option th:each="gen : ${genders}" th:text="${gen}" th:value="${gen}"></option>
+                </select>
+
+                <label for="ageRange"><b>Age Range</b></label>
+                <select id="ageRange" name="ageRange" class="form-control register-form-box">
+                    <option th:each="age : ${ageRanges}" th:text="${age}" th:value="${age}"></option>
+                </select>
+
+                <button class="btn btn-primary btn-block" type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:insert="scripts.html :: scripts"> </div>
+
+</body>
+</html>
