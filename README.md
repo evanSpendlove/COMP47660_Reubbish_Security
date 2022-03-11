@@ -35,11 +35,11 @@ We have created some test users {username, password, roles}:
 We also created some other fake data for statistics page.
 
 ## Note
-2nd dose appointments are automatically generated once vaccinator has updated that a user has received their first dose. Also, if a user trys to book an appointment which violates the outlined rules (<3 weeks, etc) then it will fail and redirect to index with no new appointment.
+2nd dose appointments are automatically generated once vaccinator has updated that a user has received their first dose. Also, if a user tries to book an appointment which violates the outlined rules (<3 weeks, etc) then it will fail and redirect to index with no new appointment.
 
 ## Services
 - User Management [Evan] 
 - Forum Page [Evan] 
-- Vaccination Portal [Reuben / Evan / John] 
+- Vaccination Portal [Primarily: Reuben | Also: Evan / John] 
 - Statistics [John] 
 
