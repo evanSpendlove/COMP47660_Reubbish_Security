@@ -21,8 +21,34 @@ import java.util.Set;
 })
 public class User {
 
-    public enum LastActivity { UNVACCINATED, FIRST_DOSE_APPT, FIRST_DOSE_RECEIVED, SECOND_DOSE_APPT, SECOND_DOSE_RECEIVED }
-    public enum Gender {MALE, FEMALE, NONBINARY, OTHER, NOT_DISCLOSED}
+    public enum LastActivity {
+        UNVACCINATED("Unvaccinated"), FIRST_DOSE_APPT("First Dose Appointment"),
+        FIRST_DOSE_RECEIVED("First Dose Received"), SECOND_DOSE_APPT("Second Dose Appointment"),
+        SECOND_DOSE_RECEIVED("Second Dose Received");
+
+        private final String text;
+
+        LastActivity(String text) {
+            this.text = text;
+        }
+
+        public String getText() {
+            return text;
+        }
+    }
+    public enum Gender {
+        MALE("Male"), FEMALE("Female"), NONBINARY("Non-Binary"), OTHER("Other"), NOT_DISCLOSED("Not Disclosed");
+
+        private final String text;
+
+        Gender(String text) {
+            this.text = text;
+        }
+
+        public String getText() {
+            return text;
+        }
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +62,7 @@ public class User {
     private String email;
     private Nationality nationality;
     private String password;
-    private LastActivity last_activity;
+    private LastActivity lastactivity;
     private Gender gender;
 
     // TODO: Add vaccination appointments using foreign key
@@ -51,7 +77,7 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Post> posts;
 
-    public User(String name, String surname, Date dob, String pps, String address, String phone_number, String email, String nationality, String password, LastActivity last_activity, String gender) {
+    public User(String name, String surname, Date dob, String pps, String address, String phone_number, String email, String nationality, String password, LastActivity lastactivity, String gender) {
         this.name = name;
         this.surname = surname;
         this.dob = dob;
@@ -67,7 +93,7 @@ public class User {
         }
 
         this.password = password;
-        this.last_activity = last_activity;
+        this.lastactivity = lastactivity;
 
         try {
             this.gender = Gender.valueOf(gender);
