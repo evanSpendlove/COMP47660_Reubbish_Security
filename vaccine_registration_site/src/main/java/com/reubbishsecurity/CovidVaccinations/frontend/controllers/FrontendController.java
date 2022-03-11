@@ -113,22 +113,18 @@ public class FrontendController {
         return "index.html";
     }
 
-    @GetMapping("/portal")
-    public String portal(Principal principal, Model model){
-        User user = userRepository.findByPps(principal.getName()).get();
-        Set<Role> userRoles = user.getRoles();
-        ArrayList<String> userRolesAsStrings = convertUserRolesToStrings(userRoles);
-        model.addAttribute("userRoles", userRolesAsStrings);
+    @GetMapping("/portal/appointments")
+    public String portal(){
         return "appointments.html";
     }
 
     @PostMapping("/add/vaccination")
     public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given) throws UserNotFoundException {
         User user = userRepository.findByPps(pps).orElseThrow(() -> new UserNotFoundException(pps));
-        if(user.getLast_activity() == User.LastActivity.FIRST_DOSE_APPT) {
-            user.setLast_activity(User.LastActivity.FIRST_DOSE_RECEIVED);
-        } else if(user.getLast_activity() == User.LastActivity.SECOND_DOSE_APPT) {
-            user.setLast_activity(User.LastActivity.SECOND_DOSE_RECEIVED);
+        if(user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT) {
+            user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
+        } else if(user.getLastactivity() == User.LastActivity.SECOND_DOSE_APPT) {
+            user.setLastactivity(User.LastActivity.SECOND_DOSE_RECEIVED);
         }
         return "index.html";
     }
@@ -152,12 +148,12 @@ public class FrontendController {
         if (appointment.getAvailable() == true){
             appointment.setAvailable(false);
             appointment.setUser(user);
-            if(user.getLast_activity() == User.LastActivity.UNVACCINATED){
+            if(user.getLastactivity() == User.LastActivity.UNVACCINATED){
                 appointment.setAppointmentType(Appointment.AppointmentType.FIRST_DOSE);
-                user.setLast_activity(User.LastActivity.FIRST_DOSE_APPT);
-            }else if (user.getLast_activity() == User.LastActivity.FIRST_DOSE_RECEIVED){
+                user.setLastactivity(User.LastActivity.FIRST_DOSE_APPT);
+            }else if (user.getLastactivity() == User.LastActivity.FIRST_DOSE_RECEIVED){
                 appointment.setAppointmentType(Appointment.AppointmentType.SECOND_DOSE);
-                user.setLast_activity(User.LastActivity.SECOND_DOSE_APPT);
+                user.setLastactivity(User.LastActivity.SECOND_DOSE_APPT);
             } else{
                 model.addAttribute("flash","Appointment not created due to error");
                 return "index.html";

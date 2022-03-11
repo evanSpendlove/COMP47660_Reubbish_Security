@@ -18,8 +18,6 @@
 </head>
 <body onload="connect()">
 <div th:insert="header.html :: header"> </div>
-<div th:if="${#lists.contains(userRoles, 'VACCINATOR')}">
-</div>
 
 <div class="container" id="calendar">
   <div class="month">      

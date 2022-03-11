@@ -15,8 +15,8 @@
                 Vaccination Portal
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" th:href="@{/portal/a}">Button 1</a>
-                <a class="dropdown-item" th:href="@{/portal/b}">Button 2</a>
+                <a class="dropdown-item" th:href="@{/portal/appointments}">Create Appointment</a>
+                <a class="dropdown-item" sec:authorize="hasAuthority('VACCINATOR')" th:href="@{/portal/update-appointments}">Update</a>
             </div>
         </li>
         <li>
