@@ -40,27 +40,35 @@ input[type=text]:focus, input[type=password]:focus {
     box-shadow: none !important;
     outline: 0 !important;
 }
-
 .login-area .btn {
     color: #ffffff;
     margin-top: 10px;
     width: 30%;
     height: 50%;
-    background: #b4083a;
     border: none;
     float: none;
     margin: auto;
     position: relative;
 }
 
+.login-area .btn-success {
+    color: #ffffff;
+    margin-top: 10px;
+    margin-left: 3px;
+    margin-right: 3px;
+    width: 30%;
+    height: 50%;
+    border: none;
+    float: none;
+    margin: auto;
+    position: relative;
+  }
+
 #btn-register {
     text-decoration: none;
     width: 40%;
 }
 
-.login-area .btn:hover {
-    background: #7d082a;
-}
 
 .login-area h4 {
     margin-top: 10px;

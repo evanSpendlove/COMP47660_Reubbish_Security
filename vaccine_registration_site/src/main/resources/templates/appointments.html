@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Appointments</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/css/calendar.css">
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script type="text/javascript" src="/js/stomp.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.min.css">
+  
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/login.css">
+  <script type="text/javascript" src="/js/appointments.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+</head>
+<body onload="connect()">
+<div th:insert="header.html :: header"> </div>
+<div th:if="${#lists.contains(userRoles, 'VACCINATOR')}">
+</div>
+
+<div class="container" id="calendar">
+  <div class="month">      
+    <ul>
+      <li class="prev" onclick="moveCalendarBack()">&#10094;</li>
+      <li class="next" onclick="moveCalendarForward()">&#10095;</li>
+      <li id="month">
+        <span id="monthText"></span>
+        <br>
+        <span style="font-size:18px" id="yearText"></span>
+      </li>
+    </ul>
+  </div>
+  <ul class="weekdays">
+    <li>Mo</li>
+    <li>Tu</li>
+    <li>We</li>
+    <li>Th</li>
+    <li>Fr</li>
+    <li>Sa</li>
+    <li>Su</li>
+  </ul>
+  
+  <ul class="days" id="days">
+  </ul>
+</div>
+<div class="wrapper" id="hidden1" style="display: none;">
+  <div id="container">
+      <div class="login-area" id="availableTimesDiv">
+          
+      </div>
+  </div>
+</div>
+
+<div class="wrapper" id="confirmationArea" style="display: none;">
+  <div id="container">
+      <div class="login-area">
+        <h2> Create Appointment</h2>
+        <form class="form-signin" th:action="@{/add/appointment}" method="post">
+          <div class="form-group">
+              <label for="title"><b>Date</b></label>
+              <input type="text" placeholder="Date" id="date" name="date" class="form-control form-box" readonly>
+
+              <label for="thread-content"><b>Time</b></label>
+              <input type="text" placeholder="Time" id="time" name="time" class="form-control form-box" readonly>
+              <button class="btn btn-danger" type="button" onclick="closeConfirmation()">Go back</button>
+              <button class="btn btn-success" type="submit">Create Appointment</button>
+          </div>
+      </form>
+      </div>
+  </div>
+</div>
+
+  
+</body>
+</html>

@@ -2,6 +2,8 @@ package com.reubbishsecurity.CovidVaccinations.authentication.entity;
 
 import com.reubbishsecurity.CovidVaccinations.authentication.entity.util.Nationality;
 import com.reubbishsecurity.CovidVaccinations.forum.entity.Post;
+import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -77,7 +79,10 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Post> posts;
 
-    public User(String name, String surname, Date dob, String pps, String address, String phone_number, String email, String nationality, String password, LastActivity lastactivity, String gender) {
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Appointment> appointments;
+
+    public User(String name, String surname, Date dob, String pps, String address, String phone_number, String email, String nationality, String password, LastActivity last_activity, String gender) {
         this.name = name;
         this.surname = surname;
         this.dob = dob;
