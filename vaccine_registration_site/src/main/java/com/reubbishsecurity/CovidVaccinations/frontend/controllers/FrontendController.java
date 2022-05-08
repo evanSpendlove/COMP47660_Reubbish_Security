@@ -145,7 +145,7 @@ public class FrontendController {
                 System.out.println("Invalid password!!!");
             }
             SimpleDateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-DD");
-            User new_user = new User(name, surname, dateFormatter.parse(dob), pps.toUpperCase(), address, phone_number, email, nationality, bCryptPasswordEncoder.encode(password), User.LastActivity.UNVACCINATED, gender);
+            User new_user = new User(name, surname, dateFormatter.parse(dob).toString(), pps.toUpperCase(), address, phone_number, email, nationality, bCryptPasswordEncoder.encode(password), User.LastActivity.UNVACCINATED, gender);
             new_user.setRoles(userRole());
             userRepository.save(new_user);
         } catch (Exception ex) {
