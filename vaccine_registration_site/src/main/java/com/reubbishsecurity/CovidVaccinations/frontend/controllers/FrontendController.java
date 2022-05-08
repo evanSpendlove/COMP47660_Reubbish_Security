@@ -32,6 +32,15 @@ import java.util.stream.Collectors;
 @Controller
 public class FrontendController {
 
+    private String password_validation_regex = "^(?=.*[0-9])"
+                   + "(?=.*[a-z])(?=.*[A-Z])"
+                   + "(?=.*[@#$%^&+=!-_;:/*~<>?.{}])"
+                   + "(?=\\S+$).{12,50}$";
+
+    private Pattern password_pattern = Pattern.compile(password_validation_regex);
+    private String[] password_sequences = new String[] {"qwerty", "qaz", "wsx", "edc", "rfv", "tgb", "yhn", "ujm", "ikl", "uiop", "asdf", "ghj", "jkl", "zxc", "vbn", "bnm", "123", "234", "345", "456", "567", "678", "789", "890"};
+    private HashSet<String> common_passwords = new HashSet<>();
+
     @Autowired
     UserRepository userRepository;
 
@@ -42,6 +51,19 @@ public class FrontendController {
 
     private static final String[] nationalities = Arrays.stream(Nationality.values()).map(Enum::name).toArray(String[]::new);
     private static final String[] genders = Arrays.stream(User.Gender.values()).map(Enum::name).toArray(String[]::new);
+
+    public FrontendController() {
+        super();
+        try {
+            File file = ResourceUtils.getFile("classpath:common_passwords.txt");
+            Scanner reader = new Scanner(myObj);
+            while (reader.hasNextLine()) {
+                common_passwords.add(reader.nextLine());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     @GetMapping("/")
     public String index(Model model, Principal principal) {
@@ -100,6 +122,44 @@ public class FrontendController {
             ex.printStackTrace();
         }
         return "redirect:/login";
+    }
+
+    private boolean is_valid_password(String password) {
+        /*
+            - Screened against list of common pwds and list of pwds compromised in known security rbeaches
+         */
+
+        if (password == null) {
+            return false;
+        }
+        if (password_pattern.matcher(password).matches() == false) {
+            return false
+        }
+
+
+        for (String seq : password_sequences) {
+            if (password.contains(seq) || password.contains(new StringBuilder().append(seq).reverse().toString())) {
+                return false;
+            }
+        }
+
+        repetiton_counter = 0;
+        seen_char = ' ';
+        for (int i = 0; i < password.length(); i++) {
+            if (password[i] == seen_char) {
+                repetition_counter++;
+                if (repetition_counter >= 3) {
+                    return false;
+                }
+            } else {
+                repetition_counter = 0;
+                seen_char = password[i];
+            }
+        }
+
+        // TODO: Screened against list of common pwds and list of pwds compromised in known security rbeaches
+
+        return true;
     }
 
     @GetMapping("/update-roles")
