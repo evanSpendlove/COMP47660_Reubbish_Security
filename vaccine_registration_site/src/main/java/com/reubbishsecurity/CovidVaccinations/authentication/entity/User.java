@@ -7,6 +7,7 @@ import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnTransformer;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -58,12 +59,37 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @ColumnTransformer(
+            read="AES_DECRYPT(UNHEX(name), UNHEX(SHA2('secret', 512)))",
+            write="HEX(AES_ENCRYPT(?, UNHEX(SHA2('secret', 512))))"
+    )
     private String name;
+
+    @ColumnTransformer(
+            read="AES_DECRYPT(UNHEX(surname), UNHEX(SHA2('secret', 512)))",
+            write="HEX(AES_ENCRYPT(?, UNHEX(SHA2('secret', 512))))"
+    )
     private String surname;
-    private Date dob; // Date of Birth
+    private Date dob; // Date of Birth // TODO
     private String pps;
+
+    @ColumnTransformer(
+            read="AES_DECRYPT(UNHEX(address), UNHEX(SHA2('secret', 512)))",
+            write="HEX(AES_ENCRYPT(?, UNHEX(SHA2('secret', 512))))"
+    )
     private String address;
+
+    @ColumnTransformer(
+            read="AES_DECRYPT(UNHEX(phone_number), UNHEX(SHA2('secret', 512)))",
+            write="HEX(AES_ENCRYPT(?, UNHEX(SHA2('secret', 512))))"
+    )
     private String phone_number;
+
+    @ColumnTransformer(
+            read="AES_DECRYPT(UNHEX(email), UNHEX(SHA2('secret', 512)))",
+            write="HEX(AES_ENCRYPT(?, UNHEX(SHA2('secret', 512))))"
+    )
     private String email;
     private Nationality nationality;
     private String password;

@@ -39,7 +39,7 @@ public class FrontendController {
     private String password_validation_regex = "^(?=.*[0-9])"
                    + "(?=.*[a-z])(?=.*[A-Z])"
                    + "(?=.*[@#$%^&+=!-_;:/*~<>?.{}])"
-                   + "(?=\\S+$).{12,50}$";
+                   + "(?=\\S+$).{15,50}$";
 
     private Pattern password_pattern = Pattern.compile(password_validation_regex);
     private String[] password_sequences = new String[] {"qwerty", "qaz", "wsx", "edc", "rfv", "tgb", "yhn", "ujm", "ikl", "uiop", "asdf", "ghj", "jkl", "zxc", "vbn", "bnm", "123", "234", "345", "456", "567", "678", "789", "890"};
