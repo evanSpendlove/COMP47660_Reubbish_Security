@@ -21,16 +21,29 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Controller
 public class FrontendController {
+
+    private String password_validation_regex = "^(?=.*[0-9])"
+                   + "(?=.*[a-z])(?=.*[A-Z])"
+                   + "(?=.*[@#$%^&+=!-_;:/*~<>?.{}])"
+                   + "(?=\\S+$).{15,50}$";
+
+    private Pattern password_pattern = Pattern.compile(password_validation_regex);
+    private String[] password_sequences = new String[] {"qwerty", "qaz", "wsx", "edc", "rfv", "tgb", "yhn", "ujm", "ikl", "uiop", "asdf", "ghj", "jkl", "zxc", "vbn", "bnm", "123", "234", "345", "456", "567", "678", "789", "890"};
+    private HashSet<String> common_passwords = new HashSet<>();
 
     @Autowired
     UserRepository userRepository;
@@ -42,6 +55,39 @@ public class FrontendController {
 
     private static final String[] nationalities = Arrays.stream(Nationality.values()).map(Enum::name).toArray(String[]::new);
     private static final String[] genders = Arrays.stream(User.Gender.values()).map(Enum::name).toArray(String[]::new);
+
+    public FrontendController() {
+        super();
+        try {
+            // File file = ResourceUtils.getFile("classpath:common_passwords.txt");
+            System.out.println(getClass().getClassLoader().getResource("common_passwords.txt").getPath());
+
+            /*
+            File file = new File(getClass().getClassLoader().getResource("common_passwords.txt").getPath());
+            Scanner reader = new Scanner(file);
+            while (reader.hasNextLine()) {
+                common_passwords.add(reader.nextLine());
+            }
+             */
+            // File file = new File("BOOT-INF/classes/common_passwords.txt");
+            // BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("common_passwords.txt")));
+            /*
+            while (reader.ready()) {
+                common_passwords.add(reader.readLine());
+            }
+             */
+            /*
+            // this.getClass().getClassLoader().getResourceAsStream("com/reubbishsecurity/CovidVaccinations/common_passwords.txt");
+            // File file = new File(getClass().getClassLoader().getResource("com/reubbishsecurity/CovidVaccinations/common_passwords.txt").getFile());
+            Scanner reader = new Scanner(file);
+            while (reader.hasNextLine()) {
+                common_passwords.add(reader.nextLine());
+            }
+             */
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     @GetMapping("/")
     public String index(Model model, Principal principal) {
@@ -92,14 +138,61 @@ public class FrontendController {
                                 @RequestParam final String password_repeat,
                                 @RequestParam final String gender) {
         try {
+            // TODO: Throw exception if invalid
+            if (is_valid_password(password)) {
+                System.out.println("Valid pw");
+            } else {
+                System.out.println("Invalid password!!!");
+            }
             SimpleDateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-DD");
-            User new_user = new User(name, surname, dateFormatter.parse(dob), pps.toUpperCase(), address, phone_number, email, nationality, bCryptPasswordEncoder.encode(password), User.LastActivity.UNVACCINATED, gender);
+            User new_user = new User(name, surname, dateFormatter.parse(dob).toString(), pps.toUpperCase(), address, phone_number, email, nationality, bCryptPasswordEncoder.encode(password), User.LastActivity.UNVACCINATED, gender);
             new_user.setRoles(userRole());
             userRepository.save(new_user);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return "redirect:/login";
+    }
+
+    private boolean is_valid_password(String password) {
+        if (password == null) {
+            System.out.println("Null password");
+            return false;
+        }
+        if (!password_pattern.matcher(password).matches()) {
+            System.out.println("Regex not matched");
+            return false;
+        }
+
+
+        for (String seq : password_sequences) {
+            if (password.contains(seq) || password.contains(new StringBuilder().append(seq).reverse().toString())) {
+                System.out.println("Sequence matched");
+                return false;
+            }
+        }
+
+        int repetition_counter = 0;
+        char seen_char = ' ';
+        for (int i = 0; i < password.length(); i++) {
+            if (password.charAt(i) == seen_char) {
+                repetition_counter++;
+                if (repetition_counter >= 3) {
+                    System.out.println("Repetition found!");
+                    return false;
+                }
+            } else {
+                repetition_counter = 0;
+                seen_char = password.charAt(i);
+            }
+        }
+
+        // TODO: Screened against list of common pwds and list of pwds compromised in known security rbeaches
+        if (common_passwords.contains(password)) {
+            System.out.println("Found in common passwords!");
+        }
+
+        return !common_passwords.contains(password);
     }
 
     @GetMapping("/update-roles")
