@@ -13,9 +13,8 @@
 <body>
 <div th:insert="header.html :: header"> </div>
 
-<p th:text="${flash}"></p>
-
 <div class="container">
+    <a href="/enable-mfa">Enable Multi-Factor Authentication</a>
     <h3 th:text="${'Hello ' + name + '!'}"></h3>
     <h3 th:text="${'Current Vaccination Status: ' + lastActivity}"></h3>
     <h3 th:if="${hasFirstDose == true}" th:text="${'First Dose: ' + first_dose}" ></h3>

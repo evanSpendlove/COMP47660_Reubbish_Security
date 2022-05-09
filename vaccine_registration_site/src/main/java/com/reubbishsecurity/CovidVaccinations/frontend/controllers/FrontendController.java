@@ -5,6 +5,7 @@ import com.reubbishsecurity.CovidVaccinations.authentication.entity.Role;
 import com.reubbishsecurity.CovidVaccinations.authentication.entity.User;
 import com.reubbishsecurity.CovidVaccinations.authentication.entity.util.Nationality;
 import com.reubbishsecurity.CovidVaccinations.authentication.exception.UserNotFoundException;
+import com.reubbishsecurity.CovidVaccinations.authentication.multifactor.DefaultMFATokenManager;
 import com.reubbishsecurity.CovidVaccinations.authentication.repository.UserRepository;
 import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment;
 import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment.AppointmentType;
@@ -12,6 +13,7 @@ import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment.Vaccin
 import com.reubbishsecurity.CovidVaccinations.frontend.messages.AppointmentAvailability;
 import com.reubbishsecurity.CovidVaccinations.frontend.messages.CheckAvailabilityOnDate;
 import com.reubbishsecurity.CovidVaccinations.frontend.repository.AppointmentsRepository;
+import dev.samstevens.totp.exceptions.QrGenerationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -26,8 +28,6 @@ import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -41,7 +41,9 @@ public class FrontendController {
     @Autowired
     AppointmentsRepository appointmentsRepository;
 
-    BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    private DefaultMFATokenManager mfaTokenManager = new DefaultMFATokenManager();
 
     private static final String[] nationalities = Arrays.stream(Nationality.values()).map(Enum::name).toArray(String[]::new);
     private static final String[] genders = Arrays.stream(User.Gender.values()).map(Enum::name).toArray(String[]::new);
@@ -113,6 +115,29 @@ public class FrontendController {
     @GetMapping("/update-roles")
     public String update_roles(){
         return "update-roles.html";
+    }
+
+    @GetMapping("/enable-mfa")
+    public String enable_mfa(Principal principal, Model model) throws QrGenerationException {
+        User user = userRepository.findByPps(principal.getName()).get();
+        String secret = mfaTokenManager.generateSecretKey();
+        user.setSecret(secret);
+        String qrCodeURL = mfaTokenManager.getQRCode(secret);
+
+        model.addAttribute("qrCode", qrCodeURL);
+        model.addAttribute("qrCodeKey", secret);
+
+        userRepository.save(user);
+        return "enable-mfa.html";
+    }
+
+    @GetMapping("/enable-mfa/complete")
+    public String complete_mfa(Principal principal) {
+        User user = userRepository.findByPps(principal.getName()).get();
+        user.setMfaEnabled(true);
+        userRepository.save(user);
+
+        return "redirect:/";
     }
 
     @PostMapping("/update-roles")

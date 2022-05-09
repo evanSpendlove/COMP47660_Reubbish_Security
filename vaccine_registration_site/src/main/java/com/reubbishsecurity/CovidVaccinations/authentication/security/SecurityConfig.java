@@ -9,11 +9,19 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@Configuration
+import javax.annotation.Resource;
+
+// @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+    @Resource
+    private CustomWebAuthenticationDetailsSource authenticationDetailsSource;
+
+    @Resource
+    private CustomAuthenticationProvider customAuthenticationProvider;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -37,6 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .failureUrl("/login?error=true")
                     .usernameParameter("pps").passwordParameter("password")
                     .permitAll()
+                .authenticationDetailsSource(authenticationDetailsSource)
                 .and()
                 .logout()
                 .permitAll();
@@ -51,8 +60,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .userDetailsService(userDetailsService())
-                // .passwordEncoder(new CustomPasswordEncoder()); // TODO(evanSpendlove): Delete
                 .passwordEncoder(bCryptPasswordEncoder);
+
+        auth.authenticationProvider(customAuthenticationProvider);
     }
 
 }
