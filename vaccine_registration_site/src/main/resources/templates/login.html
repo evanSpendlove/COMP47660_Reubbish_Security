@@ -31,8 +31,8 @@
                     <label for="password"><b>Password</b></label>
                     <input type="password" placeholder="Enter Password" id="password" name="password" class="form-control form-box" required>
 
-                    <label for="code"><b>Multi-Factor Authentication Code</b></label>
-                    <input type='text' id='code' placeholder='MFA Code' name='code'/>
+                    <label for="code"><b>MFA Code</b></label>
+                    <input type='text' id='code' placeholder='MFA Code' class="form-control form-box" name='code'/>
 
                     <div th:if="${param.error}">
                         <div class="alert alert-danger">

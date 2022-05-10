@@ -102,12 +102,13 @@ public class User {
     private VaccineType first_dose;
     private VaccineType second_dose;
     public boolean mfa_enabled;
+    public boolean mfa_confirmed;
 
     @ColumnTransformer(
-            read="AES_DECRYPT(UNHEX(email), UNHEX(SHA2('secret', 512)))",
+            read="AES_DECRYPT(UNHEX(totp_secret), UNHEX(SHA2('secret', 512)))",
             write="HEX(AES_ENCRYPT(?, UNHEX(SHA2('secret', 512))))"
     )
-    private String secret;
+    private String totp_secret;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles",
@@ -145,8 +146,10 @@ public class User {
         catch (IllegalArgumentException e){
             this.gender = Gender.NOT_DISCLOSED;
         }
-        this.secret = Base32.random();
+        this.totp_secret = Base32.random();
+        System.out.println(this.totp_secret);
         this.mfa_enabled = false;
+        this.mfa_confirmed = false;
     }
 
     public User(String name, String pps, String password) {}
