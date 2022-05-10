@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnTransformer;
+import org.jboss.aerogear.security.otp.api.Base32;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -100,6 +101,14 @@ public class User {
     private Gender gender;
     private VaccineType first_dose;
     private VaccineType second_dose;
+    public boolean mfa_enabled;
+    public boolean mfa_confirmed;
+
+    @ColumnTransformer(
+            read="AES_DECRYPT(UNHEX(totp_secret), UNHEX(SHA2('secret', 512)))",
+            write="HEX(AES_ENCRYPT(?, UNHEX(SHA2('secret', 512))))"
+    )
+    private String totp_secret;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles",
@@ -137,7 +146,10 @@ public class User {
         catch (IllegalArgumentException e){
             this.gender = Gender.NOT_DISCLOSED;
         }
-
+        this.totp_secret = Base32.random();
+        System.out.println(this.totp_secret);
+        this.mfa_enabled = false;
+        this.mfa_confirmed = false;
     }
 
     public User(String name, String pps, String password) {}

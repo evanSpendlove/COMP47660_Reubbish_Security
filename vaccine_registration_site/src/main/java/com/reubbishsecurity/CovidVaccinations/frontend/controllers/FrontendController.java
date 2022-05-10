@@ -15,19 +15,23 @@ import com.reubbishsecurity.CovidVaccinations.frontend.repository.AppointmentsRe
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -50,6 +54,12 @@ public class FrontendController {
     @GetMapping("/")
     public String index(Model model, Principal principal) {
         User user = userRepository.findByPps(principal.getName()).get();
+
+        System.out.println(user);
+        if (user.mfa_enabled && !user.mfa_confirmed) {
+            return "redirect:/mfa/enable";
+        }
+
         List<Appointment> appts = appointmentsRepository.findByUser(user).stream().filter(appointment -> appointment.getComplete() == false).collect(Collectors.toList());
         model.addAttribute("name", user.getName());
         model.addAttribute("appointments", appts);
@@ -75,6 +85,22 @@ public class FrontendController {
         return "redirect:/";
     }
 
+    @GetMapping("/mfa/confirm")
+    public String confirm_mfa(Principal principal) {
+        User user = userRepository.findByPps(principal.getName()).get();
+        user.mfa_confirmed = true;
+        userRepository.save(user);
+        SecurityContextHolder.getContext().setAuthentication(null); // Log out user
+        return "redirect:/";
+    }
+
+    @GetMapping("/mfa/enable")
+    public String enable_mfa(Principal principal, Model model) throws UnsupportedEncodingException {
+        User user = userRepository.findByPps(principal.getName()).get();
+        model.addAttribute("qr", generateQRUrl(user));
+        return "confirm-mfa.html";
+    }
+
     @GetMapping("/register")
     public String register(Model model) {
         model.addAttribute("nationalities", nationalities);
@@ -94,14 +120,17 @@ public class FrontendController {
                                 @RequestParam final String nationality,
                                 @RequestParam final String password,
                                 @RequestParam final String password_repeat,
-                                @RequestParam final String gender) {
-        try {
-            if (!validator.validate_user(name, surname,  dob, pps.toUpperCase(), address, phone_number, email, nationality, password, gender) || !password.equals(password_repeat)) {
+                                @RequestParam final String gender,
+                                @RequestParam (required = false) final Boolean mfa) {
+            try {
+                if (!validator.validate_user(name, surname,  dob, pps.toUpperCase(), address, phone_number, email, nationality, password, gender) || !password.equals(password_repeat)) {
                 System.out.println("Invalid user!");
                 return "redirect:/register?error";
             }
             User new_user = new User(name, surname, dob, pps.toUpperCase(), address, phone_number, email, nationality, bCryptPasswordEncoder.encode(password), User.LastActivity.UNVACCINATED, gender);
-
+            if (mfa != null) {
+                new_user.mfa_enabled = mfa;
+            }
             new_user.setRoles(userRole());
             userRepository.save(new_user);
         } catch (Exception ex) {
@@ -275,6 +304,16 @@ public class FrontendController {
         appointmentsRepository.save(appointment);
         userRepository.save(user);
         return "redirect:/";
+    }
+
+    private static String QR_PREFIX =
+            "https://chart.googleapis.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=";
+
+    public String generateQRUrl(User user) throws UnsupportedEncodingException {
+        return QR_PREFIX + URLEncoder.encode(String.format(
+                "otpauth://totp/%s:%s?secret=%s&issuer=%s",
+                "HSE COVID-19 Portal", user.getPps(), user.getTotp_secret(), "HSE COVID-19 Portal"),
+                StandardCharsets.UTF_8);
     }
 
     private Set<Role> userRole() {
