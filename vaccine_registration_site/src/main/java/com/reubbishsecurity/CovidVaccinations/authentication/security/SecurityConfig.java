@@ -1,7 +1,9 @@
 package com.reubbishsecurity.CovidVaccinations.authentication.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,6 +16,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+    @Autowired
+    private CustomWebAuthenticationDetailsSource authenticationDetailsSource;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -31,6 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .anyRequest().authenticated()
                 .and()
                 .formLogin()
+                    .authenticationDetailsSource(authenticationDetailsSource)
                     .loginPage("/login")
                     .loginProcessingUrl("/processLogin")
                     .defaultSuccessUrl("/", true)
@@ -47,12 +53,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new CustomUserDetailsService();
     }
 
+    @Bean
+    public DaoAuthenticationProvider authProvider() {
+        CustomAuthenticationProvider authProvider = new CustomAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setPasswordEncoder(bCryptPasswordEncoder);
+        return authProvider;
+    }
+
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(userDetailsService())
-                // .passwordEncoder(new CustomPasswordEncoder()); // TODO(evanSpendlove): Delete
-                .passwordEncoder(bCryptPasswordEncoder);
+    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authProvider());
     }
 
 }

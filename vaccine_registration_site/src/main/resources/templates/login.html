@@ -31,6 +31,9 @@
                     <label for="password"><b>Password</b></label>
                     <input type="password" placeholder="Enter Password" id="password" name="password" class="form-control form-box" required>
 
+                    <label for="code"><b>Multi-Factor Authentication Code</b></label>
+                    <input type='text' id='code' placeholder='MFA Code' name='code'/>
+
                     <div th:if="${param.error}">
                         <div class="alert alert-danger">
                             <span>PPS Number or password is incorrect. Please provide valid PPS number or password.</span>

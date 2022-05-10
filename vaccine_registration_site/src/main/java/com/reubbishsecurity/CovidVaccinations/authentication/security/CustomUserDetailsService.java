@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         System.out.println("Received pps_no = " + pps_no);
         User user = userRepository.findByPps(pps_no).orElseThrow(() -> new UsernameNotFoundException("User not found with pps_no = " + pps_no));
         System.out.println("User found = " + user);
-        List<Role> authorities = new ArrayList<>(user.getRoles());
+        List<Role> authorities = new ArrayList<Role>(user.getRoles());
         return buildUserForAuthentication(user, authorities);
     }
 
