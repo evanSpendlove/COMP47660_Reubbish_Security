@@ -74,7 +74,7 @@ public class FrontendController {
         }
         model.addAttribute("lastActivity", formatLastActivity(user.getLastactivity()));
 
-        LOGGER.debug(user.getId() + " accessed index page.");
+        LOGGER.info(user.getId() + " accessed index page.");
 
         return "index.html";
     }
@@ -139,7 +139,7 @@ public class FrontendController {
             new_user.setRoles(userRole());
             userRepository.save(new_user);
 
-            LOGGER.debug(new_user.getId() + " successfully registered an account");
+            LOGGER.info(new_user.getId() + " successfully registered an account");
         } catch (Exception ex) {
             LOGGER.error("User with name = " + name + ", surname = " + surname + " failed to register an account");
             ex.printStackTrace();
@@ -166,7 +166,7 @@ public class FrontendController {
             }
             userToUpdate.setRoles(userToUpdateRoles);
             userRepository.save(userToUpdate);
-            LOGGER.debug(user.getId() + " successfully changed the user roles for " + userToUpdate.getId() + " to: " + Arrays.toString(roleStrings) + " from: " + userToUpdateRoles);
+            LOGGER.info(user.getId() + " successfully changed the user roles for " + userToUpdate.getId() + " to: " + Arrays.toString(roleStrings) + " from: " + userToUpdateRoles);
         }
         return "redirect:/";
     }
@@ -204,7 +204,7 @@ public class FrontendController {
             user.setFirst_dose(type);
             user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
 
-            LOGGER.debug(actingUser.getId() + " successfully recorded a vaccination for " + user.getId());
+            LOGGER.info(actingUser.getId() + " successfully recorded a vaccination for " + user.getId());
 
             boolean apptFound = false;
             int counter = 0;
@@ -241,11 +241,18 @@ public class FrontendController {
                     counter++;
                 }
             }
+            if (apptFound){
+                LOGGER.info(actingUser.getId() + " successfully created a second vaccination appointment for " + user.getId());
+            } else{
+                LOGGER.info(actingUser.getId() + " couldn't create a second vaccination appointment for " + user.getId());
+            }
         } else if(second_dose) {
             user.setSecond_dose(type);
             user.setLastactivity(User.LastActivity.SECOND_DOSE_RECEIVED);
-        }
 
+            LOGGER.info(actingUser.getId() + " successfully recorded a vaccination for " + user.getId());
+        }
+        
         userRepository.save(user);
         return "redirect:/";
     }
@@ -295,7 +302,7 @@ public class FrontendController {
             }
             appointmentsRepository.save(appointment);
         }
-        LOGGER.debug(user.getId() + " successfully booked a vaccination appointment");
+        LOGGER.info(user.getId() + " successfully booked a vaccination appointment");
         model.addAttribute("flash","Appointment created");
         return "redirect:/";
     }
@@ -317,7 +324,7 @@ public class FrontendController {
         }
         appointmentsRepository.save(appointment);
         userRepository.save(user);
-        LOGGER.debug(user.getId() + " successfully cancelled a vaccination appointment");
+        LOGGER.info(user.getId() + " successfully cancelled a vaccination appointment");
         return "redirect:/";
     }
 

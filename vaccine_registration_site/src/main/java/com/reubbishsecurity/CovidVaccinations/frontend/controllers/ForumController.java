@@ -73,7 +73,7 @@ public class ForumController {
         Post post = new Post(thread, user, date, content);
         postRepository.save(post);
 
-        LOGGER.debug("User " + user.getId() + " created threat with title = " + title + ", content = " + content);
+        LOGGER.info("User " + user.getId() + " created threat with title = " + title + ", content = " + content);
 
         return "redirect:/forum";
     }
@@ -93,7 +93,7 @@ public class ForumController {
         thread.incrementReplies();
         threadRepository.save(thread);
 
-        LOGGER.debug("User " + user.getId() + " created post with content = " + content);
+        LOGGER.info("User " + user.getId() + " created post with content = " + content);
 
         return "redirect:/forum/thread/" + threadId;
     }

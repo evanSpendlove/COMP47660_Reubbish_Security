@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .usernameParameter("pps").passwordParameter("password")
                     .permitAll()
                 .and()
-                .logout()
+                .logout().deleteCookies("JSESSIONID").clearAuthentication(true).invalidateHttpSession(true)
                 .permitAll();
     }
 
