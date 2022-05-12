@@ -26,6 +26,9 @@ public class ForumController {
     @Autowired
     PostRepository postRepository;
 
+    private final int MAXIMUM_TITLE_LENGTH = 250;
+    private final int MAXIMUM_CONTENT_LENGTH = 5000;
+
     @GetMapping("")
     public String index(Model model) {
         List<Thread> threads = threadRepository.findAll();
@@ -52,6 +55,10 @@ public class ForumController {
 
     @PostMapping("/create/thread")
     public String createThread(Principal principal, @RequestParam String title, @RequestParam String content) {
+        if (title.length() > MAXIMUM_TITLE_LENGTH || content.length() > MAXIMUM_CONTENT_LENGTH) {
+            return "redirect:/forum/create/thread?error";
+        }
+
         User user = userRepository.findByPps(principal.getName()).get();
         Date date = new Date();
         Thread thread = new Thread(title, date);
@@ -64,6 +71,9 @@ public class ForumController {
 
     @PostMapping("/thread/{threadId}/post")
     public String createPost(Principal principal, @PathVariable long threadId, @RequestParam String content) {
+        if (content.length() > MAXIMUM_CONTENT_LENGTH) {
+            return "redirect:/forum/thread/" + threadId + "?error";
+        }
         Thread thread = threadRepository.findById(threadId).get();
         User user = userRepository.findByPps(principal.getName()).get();
         Date date = new Date();

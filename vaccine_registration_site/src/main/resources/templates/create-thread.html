@@ -23,6 +23,11 @@
         <div class="login-area">
             <form class="form-signin" th:action="@{/forum/create/thread}" method="post">
                 <h2 class="form-heading-smaller">Create a new Thread</h2>
+                <div th:if="${param.error}">
+                    <div class="alert alert-danger">
+                        <span>Error: Thread title or content too long. Thread titles must be less than 250 characters and Thread contents must be less than 5000 characters.</span>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="title"><b>Title</b></label>
                     <input type="text" placeholder="Title" id="title" name="title" class="form-control form-box" required>

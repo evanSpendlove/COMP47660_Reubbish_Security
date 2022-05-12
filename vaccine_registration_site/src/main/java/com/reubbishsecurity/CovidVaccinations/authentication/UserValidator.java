@@ -2,7 +2,10 @@ package com.reubbishsecurity.CovidVaccinations.authentication;
 
 import com.reubbishsecurity.CovidVaccinations.authentication.entity.User;
 import com.reubbishsecurity.CovidVaccinations.authentication.entity.util.Nationality;
+import org.springframework.core.io.ClassPathResource;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
@@ -37,31 +40,11 @@ public class UserValidator {
 
     public UserValidator() {
         try {
-            // File file = ResourceUtils.getFile("classpath:common_passwords.txt");
-            System.out.println(getClass().getClassLoader().getResource("common_passwords.txt").getPath());
-
-            /*
-            File file = new File(getClass().getClassLoader().getResource("common_passwords.txt").getPath());
-            Scanner reader = new Scanner(file);
-            while (reader.hasNextLine()) {
-                common_passwords.add(reader.nextLine());
-            }
-             */
-            // File file = new File("BOOT-INF/classes/common_passwords.txt");
-            // BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("common_passwords.txt")));
-            /*
+            ClassPathResource resource = new ClassPathResource("/common_passwords.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
             while (reader.ready()) {
                 common_passwords.add(reader.readLine());
             }
-             */
-            /*
-            // this.getClass().getClassLoader().getResourceAsStream("com/reubbishsecurity/CovidVaccinations/common_passwords.txt");
-            // File file = new File(getClass().getClassLoader().getResource("com/reubbishsecurity/CovidVaccinations/common_passwords.txt").getFile());
-            Scanner reader = new Scanner(file);
-            while (reader.hasNextLine()) {
-                common_passwords.add(reader.nextLine());
-            }
-             */
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -76,45 +59,26 @@ public class UserValidator {
     }
 
     private boolean validate_name(String name) {
-        if (!name_pattern.matcher(name).matches()) {
-            System.out.println("Invalid Name");
-        }
         return name_pattern.matcher(name).matches();
     }
 
     private boolean validate_date(String date)  {
-        System.out.println("Date = " + date);
-        if (!date_pattern.matcher(date).matches()) {
-            System.out.println("Invalid Date");
-        }
         return date_pattern.matcher(date).matches();
     }
 
     private boolean validate_pps(String pps) {
-        if (!pps_pattern.matcher(pps).matches()) {
-            System.out.println("Invalid pps");
-        }
         return pps_pattern.matcher(pps).matches();
     }
 
     private boolean validate_address(String address) {
-        if (!address_pattern.matcher(address).matches()) {
-            System.out.println("Invalid address");
-        }
         return address_pattern.matcher(address).matches();
     }
 
     private boolean validate_phone_number(String phone_number) {
-        if (!phone_number_pattern.matcher(phone_number).matches()) {
-            System.out.println("Invalid phone_number");
-        }
         return phone_number_pattern.matcher(phone_number).matches();
     }
 
     private boolean validate_email(String email) {
-        if (!email_pattern.matcher(email).matches()) {
-            System.out.println("Invalid email");
-        }
         return email_pattern.matcher(email).matches();
     }
 
@@ -124,7 +88,6 @@ public class UserValidator {
             return true;
         }
         catch (IllegalArgumentException e){
-            System.out.println("Invalid Nationality");
             return false;
         }
     }
@@ -135,25 +98,21 @@ public class UserValidator {
             return true;
         }
         catch (IllegalArgumentException e){
-            System.out.println("Invalid gender");
             return false;
         }
     }
 
     private boolean validate_password(String password) {
         if (password == null) {
-            System.out.println("Null password");
             return false;
         }
         if (!password_pattern.matcher(password).matches()) {
-            System.out.println("Regex not matched");
             return false;
         }
 
 
         for (String seq : password_sequences) {
             if (password.contains(seq) || password.contains(new StringBuilder().append(seq).reverse().toString())) {
-                System.out.println("Sequence matched");
                 return false;
             }
         }
@@ -164,7 +123,6 @@ public class UserValidator {
             if (password.charAt(i) == seen_char) {
                 repetition_counter++;
                 if (repetition_counter >= 3) {
-                    System.out.println("Repetition found!");
                     return false;
                 }
             } else {
@@ -173,12 +131,6 @@ public class UserValidator {
             }
         }
 
-        // TODO: Screened against list of common pwds and list of pwds compromised in known security rbeaches
-        if (common_passwords.contains(password)) {
-            System.out.println("Found in common passwords!");
-        }
-
         return !common_passwords.contains(password);
     }
-
 }

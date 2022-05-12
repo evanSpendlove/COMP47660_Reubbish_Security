@@ -29,6 +29,11 @@
 <div sec:authorize="hasAuthority('STAFF')" class="wrapper">
     <div id="content">
         <div class="login-area">
+            <div th:if="${param.error}">
+                <div class="alert alert-danger">
+                    <span>Error: Post content too long. Post contents must be less than 5000 characters.</span>
+                </div>
+            </div>
             <form class="form-signin" th:action="@{'/forum/thread/' + ${thread.id} + '/post'}" method="post">
                 <h2 class="form-heading-smaller">Add a new Post</h2>
                 <div class="form-group">
