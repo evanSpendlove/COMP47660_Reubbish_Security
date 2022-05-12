@@ -6,13 +6,17 @@ import com.reubbishsecurity.CovidVaccinations.forum.entity.Post;
 import com.reubbishsecurity.CovidVaccinations.forum.entity.Thread;
 import com.reubbishsecurity.CovidVaccinations.forum.repository.PostRepository;
 import com.reubbishsecurity.CovidVaccinations.forum.repository.ThreadRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/forum")
@@ -25,6 +29,8 @@ public class ForumController {
 
     @Autowired
     PostRepository postRepository;
+
+    private static final Logger LOGGER = LogManager.getLogger(ForumController.class);
 
     private final int MAXIMUM_TITLE_LENGTH = 250;
     private final int MAXIMUM_CONTENT_LENGTH = 5000;
@@ -66,6 +72,9 @@ public class ForumController {
 
         Post post = new Post(thread, user, date, content);
         postRepository.save(post);
+
+        LOGGER.debug("User " + user.getId() + " created threat with title = " + title + ", content = " + content);
+
         return "redirect:/forum";
     }
 
@@ -83,6 +92,8 @@ public class ForumController {
         thread.setLatestPost(date);
         thread.incrementReplies();
         threadRepository.save(thread);
+
+        LOGGER.debug("User " + user.getId() + " created post with content = " + content);
 
         return "redirect:/forum/thread/" + threadId;
     }

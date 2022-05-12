@@ -12,6 +12,8 @@ import com.reubbishsecurity.CovidVaccinations.frontend.entity.Appointment.Vaccin
 import com.reubbishsecurity.CovidVaccinations.frontend.messages.AppointmentAvailability;
 import com.reubbishsecurity.CovidVaccinations.frontend.messages.CheckAvailabilityOnDate;
 import com.reubbishsecurity.CovidVaccinations.frontend.repository.AppointmentsRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -43,6 +45,8 @@ public class FrontendController {
     @Autowired
     AppointmentsRepository appointmentsRepository;
 
+    private static final Logger LOGGER = LogManager.getLogger(FrontendController.class);
+
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     private static final String[] nationalities = Arrays.stream(Nationality.values()).map(Enum::name).toArray(String[]::new);
@@ -69,6 +73,9 @@ public class FrontendController {
             model.addAttribute("second_dose", user.getSecond_dose().toString());
         }
         model.addAttribute("lastActivity", formatLastActivity(user.getLastactivity()));
+
+        LOGGER.debug(user.getId() + " accessed index page.");
+
         return "index.html";
     }
 
@@ -88,6 +95,7 @@ public class FrontendController {
         user.mfa_confirmed = true;
         userRepository.save(user);
         SecurityContextHolder.getContext().setAuthentication(null); // Log out user
+
         return "redirect:/";
     }
 
@@ -121,7 +129,7 @@ public class FrontendController {
                                 @RequestParam (required = false) final Boolean mfa) {
             try {
                 if (!validator.validate_user(name, surname,  dob, pps.toUpperCase(), address, phone_number, email, nationality, password, gender) || !password.equals(password_repeat)) {
-                System.out.println("Invalid user!");
+                LOGGER.error("User with name = " + name + ", surname = " + surname + " failed to register an account due to invalid registration details");
                 return "redirect:/register?error";
             }
             User new_user = new User(name, surname, dob, pps.toUpperCase(), address, phone_number, email, nationality, bCryptPasswordEncoder.encode(password), User.LastActivity.UNVACCINATED, gender);
@@ -130,7 +138,10 @@ public class FrontendController {
             }
             new_user.setRoles(userRole());
             userRepository.save(new_user);
+
+            LOGGER.debug(new_user.getId() + " successfully registered an account");
         } catch (Exception ex) {
+            LOGGER.error("User with name = " + name + ", surname = " + surname + " failed to register an account");
             ex.printStackTrace();
         }
         return "redirect:/login";
@@ -155,6 +166,7 @@ public class FrontendController {
             }
             userToUpdate.setRoles(userToUpdateRoles);
             userRepository.save(userToUpdate);
+            LOGGER.debug(user.getId() + " successfully changed the user roles for " + userToUpdate.getId() + " to: " + Arrays.toString(roleStrings) + " from: " + userToUpdateRoles);
         }
         return "redirect:/";
     }
@@ -170,8 +182,10 @@ public class FrontendController {
     }
 
     @PostMapping("/add/vaccination")
-    public String add_vaccination(@RequestParam final String pps, @RequestParam String vaccine_given, @RequestParam String vaccine_type) throws UserNotFoundException {
+    public String add_vaccination(Principal principal, @RequestParam final String pps, @RequestParam String vaccine_given, @RequestParam String vaccine_type) throws UserNotFoundException {
+        User actingUser = userRepository.findByPps(principal.getName()).orElseThrow(() -> new UserNotFoundException(principal.getName()));
         User user = userRepository.findByPps(pps).orElseThrow(() -> new UserNotFoundException(pps));
+
         List<Appointment> appointments = appointmentsRepository.findByUser(user).stream().filter(appointment -> !appointment.getComplete()).collect(Collectors.toList());
         VaccinationCenter vaccinationCenter = null;
         boolean first_dose = user.getLastactivity() == User.LastActivity.FIRST_DOSE_APPT && vaccine_given.equals("First Dose");
@@ -189,6 +203,8 @@ public class FrontendController {
         if(first_dose) {
             user.setFirst_dose(type);
             user.setLastactivity(User.LastActivity.FIRST_DOSE_RECEIVED);
+
+            LOGGER.debug(actingUser.getId() + " successfully recorded a vaccination for " + user.getId());
 
             boolean apptFound = false;
             int counter = 0;
@@ -279,6 +295,7 @@ public class FrontendController {
             }
             appointmentsRepository.save(appointment);
         }
+        LOGGER.debug(user.getId() + " successfully booked a vaccination appointment");
         model.addAttribute("flash","Appointment created");
         return "redirect:/";
     }
@@ -300,6 +317,7 @@ public class FrontendController {
         }
         appointmentsRepository.save(appointment);
         userRepository.save(user);
+        LOGGER.debug(user.getId() + " successfully cancelled a vaccination appointment");
         return "redirect:/";
     }
 
