@@ -10,7 +10,15 @@ Prerequisites are docker, docker-compose {3 or greater} and maven installed with
 
 Java version must be 11
 
-Navigate to vaccine_registration_site folder and run 
+Navigate to vaccine_registration_site folder and run to generate keys
+
+```
+chmod +x keystore.sh
+./keystore.sh
+```
+
+Navigate to vaccine_registration_site folder and run web application
+
 ```
 chmod +x refresh.sh
 ./refresh.sh
@@ -23,9 +31,12 @@ docker-compose up -d mysqldb
 ./refresh.sh
 ```
 
+## Defualt URL for Testing
+Access HSE Web Apllication at: https://localhost:8443/
+
 ## User Roles
 There are 4 user roles: 
- - Admin - Can change user roles using localhost:8080/update-roles
+ - Admin - Can change user roles using https://localhost:8443/update-roles
  - Staff - Can respond to forum threads
  - Vaccinator - Can update user vaccination status in vaccine portal
  - User - Can create threads in forum and book themselves appointments via vaccine portal, can cancel appointments and reschedule once cancelled.

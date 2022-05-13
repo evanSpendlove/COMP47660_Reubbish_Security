@@ -4,6 +4,7 @@ services:
     build: ./
     ports:
       - "8080:8080"
+      - "8443:8443"
     networks:
       - covid-vaccinations-mysql
     depends_on:

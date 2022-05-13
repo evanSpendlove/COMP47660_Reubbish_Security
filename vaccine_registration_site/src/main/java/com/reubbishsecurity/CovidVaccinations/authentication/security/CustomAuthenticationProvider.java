@@ -2,6 +2,8 @@ package com.reubbishsecurity.CovidVaccinations.authentication.security;
 
 import com.reubbishsecurity.CovidVaccinations.authentication.entity.User;
 import com.reubbishsecurity.CovidVaccinations.authentication.repository.UserRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jboss.aerogear.security.otp.Totp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,7 +12,11 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
+import java.util.NoSuchElementException;
+
 public class CustomAuthenticationProvider extends DaoAuthenticationProvider {
+
+    private static Logger log = LogManager.getLogger(CustomAuthenticationProvider.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -18,11 +24,20 @@ public class CustomAuthenticationProvider extends DaoAuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication auth)
             throws AuthenticationException {
+        User user = null;
+
         String verificationCode
                 = ((CustomWebAuthenticationDetails) auth.getDetails())
                 .getVerificationCode();
-        User user = userRepository.findByPps(auth.getName()).get();
-        if (user.mfa_enabled && user.mfa_confirmed) {
+        try {
+            user = userRepository.findByPps(auth.getName()).get();
+        }
+        catch (NoSuchElementException e){
+            log.info("CustomAuthenticationProvider: authenticate| No User: " + auth.getName(), e);
+            throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+        }
+
+        if (user != null && user.mfa_enabled && user.mfa_confirmed) {
             Totp totp = new Totp(user.getTotp_secret());
             if (!isValidLong(verificationCode) || !totp.verify(verificationCode)) {
                 throw new BadCredentialsException("Invalid TOTP code");
