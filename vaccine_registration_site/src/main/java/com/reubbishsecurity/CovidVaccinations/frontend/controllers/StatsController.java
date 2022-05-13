@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -126,6 +127,10 @@ public class StatsController {
     public Map<String, Long> getAgeRangeStatsByActivity(AgeRange ageRange){
         Map<String, Long> ageStats = new HashMap<>();
 
+        String lowerDateStr, upperDateStr;
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-DD");
+
+
         for(User.LastActivity activity: User.LastActivity.values()){
             Date upperDate = new Date(System.currentTimeMillis() - (ageRange.lowerAge * msYear));
             Date lowerDate;
@@ -135,7 +140,9 @@ public class StatsController {
             else{
                 lowerDate = new Date(System.currentTimeMillis() - (ageRange.upperAge * msYear));
             }
-            ageStats.put(activity.getText(), userRepository.countAllByLastactivityAndDobBetween(activity, lowerDate, upperDate));
+            upperDateStr = dateFormatter.format(upperDate);
+            lowerDateStr = dateFormatter.format(lowerDate);
+            ageStats.put(activity.getText(), userRepository.countAllByLastactivityAndDobBetween(activity, lowerDateStr, upperDateStr));
         }
 
         return ageStats;
@@ -167,6 +174,8 @@ public class StatsController {
     public Map<String, Long> getActivityStatsByAgeRange(User.LastActivity activity){
         Map<String, Long> ageStats = new HashMap<>();
 
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-DD");
+
         for(AgeRange ageRange: AgeRange.values()){
             Date upperDate = new Date(System.currentTimeMillis() - (ageRange.lowerAge * msYear));
             Date lowerDate;
@@ -176,7 +185,9 @@ public class StatsController {
             else{
                 lowerDate = new Date(System.currentTimeMillis() - (ageRange.upperAge * msYear));
             }
-            ageStats.put(ageRange.getText(), userRepository.countAllByLastactivityAndDobBetween(activity, lowerDate, upperDate));
+            String upperDateStr = dateFormatter.format(upperDate);
+            String lowerDateStr = dateFormatter.format(lowerDate);
+            ageStats.put(ageRange.getText(), userRepository.countAllByLastactivityAndDobBetween(activity, lowerDateStr, upperDateStr));
         }
 
         return ageStats;

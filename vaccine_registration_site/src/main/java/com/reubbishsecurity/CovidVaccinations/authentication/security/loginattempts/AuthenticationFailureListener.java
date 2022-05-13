@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 
 @Component
-public class AuthenticationFailureListener/*TODO <LoginAttemptService>*/ implements
+public class AuthenticationFailureListener implements
         ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
 
     private static Logger log = LogManager.getLogger(AuthenticationSuccessEventListener.class);
