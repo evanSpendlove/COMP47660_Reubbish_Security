@@ -26,7 +26,7 @@ public class UserValidator {
     private String pps_validation_regex = "[0-9]{7}[a-zA-z]{1,2}";
     private Pattern pps_pattern = Pattern.compile(pps_validation_regex);
 
-    private String address_validation_regex = "^[a-zA-Z' -0-9.,].{1,150}$";
+    private String address_validation_regex = "[a-zA-Z0-9' -.,]{1,150}";
     private Pattern address_pattern = Pattern.compile(address_validation_regex);
 
     private String phone_number_validation_regex = "^(\\+353|\\+44|0)(\\s*\\d){9,12}$";
@@ -51,6 +51,19 @@ public class UserValidator {
     }
 
     public boolean validate_user(String name, String surname, String dob, String pps, String address, String phone_number, String email, String nationality, String password, String gender) {
+        boolean b_name = validate_name(name);
+        boolean b_surname = validate_name(surname);
+        boolean b_date =  validate_date(dob);
+        boolean b_pps =  validate_pps(pps);
+        boolean b_addr =  validate_address(address);
+        boolean b_phone =  validate_phone_number(phone_number);
+        boolean b_email =  validate_email(email);
+        boolean b_nationality =  validate_nationality(nationality);
+        boolean b_password =  validate_password(password);
+        boolean b_gender =  validate_gender(gender);
+
+        System.out.println("Name: " + b_name + ", surname = " + b_surname + ", date = " + b_date + ", pps = " + b_pps + ", addr = " + b_addr + ", phone = "  + b_phone + ", email = " + b_email + ", nationality = " + b_nationality + ", gender = " + b_gender + ", password = " + b_password);
+
         return validate_name(name) && validate_name(surname)
                 && validate_date(dob) && validate_pps(pps)
                 && validate_address(address) && validate_phone_number(phone_number)
