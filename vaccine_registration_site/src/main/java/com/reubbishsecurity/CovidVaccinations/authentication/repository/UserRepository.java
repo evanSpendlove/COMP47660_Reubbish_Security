@@ -5,6 +5,7 @@ import com.reubbishsecurity.CovidVaccinations.authentication.entity.util.Nationa
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     long countAllByGenderAndLastactivity(User.Gender gender, User.LastActivity lastActivity);
 
     long countAllByLastactivityAndDobBetween(User.LastActivity last_Activity, String rangeLow, String rangeHigh);
+
+    List<User> findAllByLastactivity(User.LastActivity activity);
 }

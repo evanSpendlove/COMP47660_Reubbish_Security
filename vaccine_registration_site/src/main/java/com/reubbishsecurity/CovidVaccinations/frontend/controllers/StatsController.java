@@ -10,11 +10,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class StatsController {
@@ -143,6 +142,7 @@ public class StatsController {
             upperDateStr = dateFormatter.format(upperDate);
             lowerDateStr = dateFormatter.format(lowerDate);
             ageStats.put(activity.getText(), userRepository.countAllByLastactivityAndDobBetween(activity, lowerDateStr, upperDateStr));
+            // ageStats.put(activity.getText(), countAllByLastactivityAndDobBetween(activity, lowerDateStr, upperDateStr));
         }
 
         return ageStats;
@@ -187,10 +187,39 @@ public class StatsController {
             }
             String upperDateStr = dateFormatter.format(upperDate);
             String lowerDateStr = dateFormatter.format(lowerDate);
+            // ageStats.put(ageRange.getText(), countAllByLastactivityAndDobBetween(activity, lowerDateStr, upperDateStr));
             ageStats.put(ageRange.getText(), userRepository.countAllByLastactivityAndDobBetween(activity, lowerDateStr, upperDateStr));
         }
 
         return ageStats;
+    }
+
+    public Long countAllByLastactivityAndDobBetween(User.LastActivity activity, String lowerDate, String upperDate) {
+        try {
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("YYYY-MM-DD");
+            Date lower = dateFormatter.parse(lowerDate);
+            Date upper = dateFormatter.parse(upperDate);
+            List<User> users = userRepository.findAllByLastactivity(activity);
+            return users.stream().filter(u -> dateBetween(dateFormatter, u, lower, upper)).count();
+        } catch (ParseException ex) {
+           ex.printStackTrace();
+        }
+        return 0L;
+    }
+
+    private boolean dateBetween(SimpleDateFormat formatter, User user, Date lower, Date upper) {
+        try {
+            System.out.println(user);
+            System.out.println(user.getDob());
+            if (user.getDob() == null) {
+                return false;
+            }
+            Date dob = formatter.parse(user.getDob());
+            return dob.compareTo(lower) >= 0 && dob.compareTo(upper) <= 0;
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        return false;
     }
 
 }
