@@ -72,7 +72,7 @@ public class User {
     )
     private String surname;
     @ColumnTransformer(
-            read="AES_DECRYPT(UNHEX(address), UNHEX(SHA2('secret', 512)))",
+            read="AES_DECRYPT(UNHEX(dob), UNHEX(SHA2('secret', 512)))",
             write="HEX(AES_ENCRYPT(?, UNHEX(SHA2('secret', 512))))"
     )
     private String dob; // Date of Birth
